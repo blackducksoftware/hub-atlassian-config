@@ -30,7 +30,7 @@
 	<component-import key="loginUriProvider" interface="com.atlassian.sal.api.auth.LoginUriProvider" />
 	<component-import key="renderer" interface="com.atlassian.templaterenderer.velocity.one.six.VelocityTemplateRenderer" />
  
-	<servlet key="admin-servlet" class="com.blackducksoftware.integration.atlassian.AdminServlet">
+	<servlet key="admin-servlet" class="com.blackducksoftware.integration.atlassian.HubAdminServlet">
   		<url-pattern>/hub-integration/admin</url-pattern>
 	</servlet>
 	
@@ -38,6 +38,29 @@
 	
 	<web-resource name="Admin Web Resources" key="resources"> 
   		<dependency>com.atlassian.auiplugin:ajs</dependency> 
-  		<resource type="download" name="js/admin.js" location="js/admin.js"/> 
+  		<resource type="download" name="js/hub-admin.js" location="js/hub-admin.js"/> 
 	</web-resource>
+	
+	<component-import key="pluginSettingsFactory" interface="com.atlassian.sal.api.pluginsettings.PluginSettingsFactory" />
+	<component-import key="transactionTemplate" interface="com.atlassian.sal.api.transaction.TransactionTemplate" />
+
+	<rest key="rest" path="/hub-integration" version="1.0">
+	  <description>Provides REST resources for the admin UI.</description>
+	</rest>
+	
+	<web-item key="jira-menu-item" name="Hub Admin" section="system.admin/globalsettings" weight="10" application="jira">
+	  <description>Link to hub admin page.</description> 
+	  <label key="hub.integration.admin.label" /> 
+	  <link linkId="hub-admin-link">/plugins/servlet/hub-integration/admin</link> 
+	</web-item>
+	<web-item key="bamboo-menu-item" name="Hub Admin" section="system.admin/plugins" weight="10" application="bamboo"> 
+	  <description>Link to hub admin page.</description> 
+	  <label key="hub.integration.admin.label" /> 
+	  <link linkId="hub-admin-link">/plugins/servlet/hub-integration/admin</link> 
+	</web-item>
+	<web-item key="refapp-menu-item" name="Hub Admin" section="system.admin/general" weight="10" application="refapp"> 
+	  <description>Link to hub admin page.</description> 
+	  <label key="hub.integration.admin.label" /> 
+	  <link linkId="hub-admin-link">/plugins/servlet/hub-integration/admin</link> 
+	</web-item>
 </atlassian-plugin>

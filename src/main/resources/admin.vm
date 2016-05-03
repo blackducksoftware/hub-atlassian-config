@@ -2,20 +2,53 @@
   <head>
     <title>$i18n.getText("hub.integration.admin.label")</title>
     <meta name="decorator" content="atl.admin" />
-   		$webResourceManager.requireResource("com.atlassian.plugins.tutorial.xproduct-admin-ui-plugin:resources")
+   		$webResourceManager.requireResource("com.blackducksoftware.integration.hub-atlassian-config:resources")
   </head>
   <body>
-    <form id="admin" class="aui">
+    <form id="hub-admin" class="aui">
       <div class="field-group">
-        <label for="name">$i18n.getText("hub.integration.admin.name.label")</label>
-        <input type="text" id="name" name="name" class="text">
+        <label for="name">$i18n.getText("hub.integration.admin.url.label")</label>
+        <input type="text" id="hubServerUrl" name="hubServerUrl" class="text">
       </div>
       <div class="field-group">
-        <label for="time">$i18n.getText("hub.integration.admin.time.label")</label>
-        <input type="text" id="time" name="time" class="text">
+        <label for="time">$i18n.getText("hub.integration.admin.username.label")</label>
+        <input type="text" id="hubUsername" name="hubUsername" class="text">
       </div>
       <div class="field-group">
-        <input type="submit" value="$i18n.getText("hub.integration.admin.save.label")" class="button">
+        <label for="time">$i18n.getText("hub.integration.admin.password.label")</label>
+        <input type="text" id="hubPassword" name="hubPassword" class="text">
+      </div>
+      <div class="field-group">
+        <label for="time">$i18n.getText("hub.integration.admin.timeout.label")</label>
+        <input type="text" id="hubTimeout" name="hubTimeout" class="text">
+      </div>
+      <div class="field-group">
+        <label for="time">$i18n.getText("hub.integration.admin.proxy.host.label")</label>
+        <input type="text" id="proxyHost" name="proxyHost" class="text">
+      </div>
+      <div class="field-group">
+        <label for="time">$i18n.getText("hub.integration.admin.proxy.port.label")</label>
+        <input type="text" id="proxyPort" name="proxyPort" class="text">
+      </div>
+      <div class="field-group">
+        <label for="time">$i18n.getText("hub.integration.admin.proxy.noproxyhost.label")</label>
+        <input type="text" id="noProxyHost" name="noProxyHost" class="text">
+      </div>
+      <div class="field-group">
+        <label for="time">$i18n.getText("hub.integration.admin.proxy.username.label")</label>
+        <input type="text" id="proxyUsername" name="proxyUsername" class="text">
+      </div>
+      <div class="field-group">
+        <label for="time">$i18n.getText("hub.integration.admin.proxy.password.label")</label>
+        <input type="text" id="proxyPassword" name="proxyPassword" class="text">
+      </div>
+      <div class="aui-buttons">
+	      <div>
+	        <input onclick="updateConfig()" type="button" value="$i18n.getText("hub.integration.admin.save.label")" class="aui-button aui-button-primary">
+	      </div>
+	      <div>
+	        <input onclick="" type="button" value="$i18n.getText("hub.integration.admin.test.label")" class="aui-button aui-button-primary">
+	      </div>
       </div>
     </form>
   </body>

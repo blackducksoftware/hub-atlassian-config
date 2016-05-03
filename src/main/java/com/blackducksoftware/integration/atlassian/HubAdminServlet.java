@@ -29,13 +29,13 @@ import com.atlassian.sal.api.auth.LoginUriProvider;
 import com.atlassian.sal.api.user.UserManager;
 import com.atlassian.templaterenderer.TemplateRenderer;
 
-public class AdminServlet extends HttpServlet {
+public class HubAdminServlet extends HttpServlet {
 
 	private final UserManager userManager;
 	private final LoginUriProvider loginUriProvider;
 	private final TemplateRenderer renderer;
 
-	public AdminServlet(final UserManager userManager, final LoginUriProvider loginUriProvider,
+	public HubAdminServlet(final UserManager userManager, final LoginUriProvider loginUriProvider,
 			final TemplateRenderer renderer) {
 		this.userManager = userManager;
 		this.loginUriProvider = loginUriProvider;
