@@ -20,17 +20,29 @@ function updateConfig() {
 			    url: AJS.contextPath() + "/rest/hub-integration/1.0/",
 			    type: "PUT",
 			    contentType: "application/json",
-			    data: '{ "hubUrl": "' + AJS.$("#hubServerUrl").val()
-			    + '", "timeout": "' + AJS.$("#hubTimeout").val()
-			    + '", "username": "' + AJS.$("#hubUsername").val()
-			    + '", "password": "' + AJS.$("#hubPassword").val()
-			    + '", "hubProxyHost": "' + AJS.$("#proxyHost").val()
-			    + '", "hubProxyPort": "' + AJS.$("#proxyPort").val()
-			    + '", "hubNoProxyHosts": "' + AJS.$("#noProxyHost").val()
-			    + '", "hubProxyUser": "' + AJS.$("#proxyUsername").val()
-			    + '", "hubProxyPassword": "' + AJS.$("#proxyPassword").val()
+			    data: '{ "hubUrl": "' + encodeURI(AJS.$("#hubServerUrl").val())
+			    + '", "timeout": "' + encodeURI(AJS.$("#hubTimeout").val())
+			    + '", "username": "' + encodeURI(AJS.$("#hubUsername").val())
+			    + '", "password": "' + encodeURI(AJS.$("#hubPassword").val())
+			    + '", "hubProxyHost": "' + encodeURI(AJS.$("#proxyHost").val())
+			    + '", "hubProxyPort": "' + encodeURI(AJS.$("#proxyPort").val())
+			    + '", "hubNoProxyHosts": "' + encodeURI(AJS.$("#noProxyHost").val())
+			    + '", "hubProxyUser": "' + encodeURI(AJS.$("#proxyUsername").val())
+			    + '", "hubProxyPassword": "' + encodeURI(AJS.$("#proxyPassword").val())
 			    + '"}',
-			    processData: false
+			    processData: false,
+			    success: function() {
+			    	AJS.messages.success({
+			    		   title: 'Success!',
+			    		   body: '<p>Save successful.</p>'
+			    		});
+			    },
+			    error: function(textStatus, errorThrown ){
+			    	AJS.messages.success({
+			    		   title: 'ERROR!',
+			    		   body: '<p>Save was not successful.</p>'
+			    		});
+			    }
 			  });
 	}
 function populateForm() {
@@ -38,18 +50,56 @@ function populateForm() {
 	    url: AJS.contextPath() + "/rest/hub-integration/1.0/",
 	    dataType: "json",
 	    success: function(config) {
-	      AJS.$("#hubServerUrl").val(config.hubUrl);
-	      AJS.$("#hubTimeout").val(config.timeout);
-	      AJS.$("#hubUsername").val(config.username);
-	      AJS.$("#hubPassword").val(config.password);
-	      AJS.$("#proxyHost").val(config.hubProxyHost);
-	      AJS.$("#proxyPort").val(config.hubProxyPort);
-	      AJS.$("#proxyUsername").val(config.hubProxyUser);
-	      AJS.$("#proxyPassword").val(config.hubProxyPassword);
-	      AJS.$("#noProxyHost").val(config.hubNoProxyHosts);
+	      updateValue("hubServerUrl", config.hubUrl);
+	      updateValue("hubTimeout", config.timeout);
+	      updateValue("hubUsername", config.username);
+	      updateValue("hubPassword", config.password);
+	      updateValue("proxyHost", config.hubProxyHost);
+	      updateValue("proxyPort", config.hubProxyPort);
+	      updateValue("proxyUsername", config.hubProxyUser);
+	      updateValue("proxyPassword", config.hubProxyPassword);
+	      updateValue("noProxyHost", config.hubNoProxyHosts);
+	      
+	      handleError('hubServerUrlError', config.hubUrlError);
+	      handleError('hubTimeoutError', config.timeoutError);
+	      handleError('hubUsernameError', config.usernameError);
+	      handleError('hubPasswordError', config.passwordError);
+	      handleError('proxyHostError', config.hubProxyHostError);
+	      handleError('proxyPortError', config.hubProxyPortError);
+	      handleError('proxyUsernameError', config.hubProxyUserError);
+	      handleError('proxyPasswordError', config.hubProxyPasswordError);
+	      handleError('noProxyHostError', config.hubNoProxyHostsError);
+	    },
+	    error: function(textStatus, errorThrown){
+	    	
 	    }
 	  });
 	}
+
+function updateValue(fieldId, configField) {
+	if(configField){
+		 AJS.$("#" + fieldId).val(decodeURI(configField));
+    }
+}
+
+
+function handleError(fieldId, configField) {
+	if(configField){
+		showError(fieldId, configField);
+    } else{
+    	hideError(fieldId);
+    }
+}
+
+function showError(fieldId, configField) {
+	  AJS.$("#" + fieldId).text(decodeURI(configField));
+  	  AJS.$("#" + fieldId).removeClass('errorHidden');
+}
+
+function hideError(fieldId) {
+	  AJS.$("#" + fieldId).text('');
+  	  AJS.$("#" + fieldId).addClass('errorHidden');
+}
 
 (function ($) {
 	populateForm();

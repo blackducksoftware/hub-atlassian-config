@@ -39,6 +39,7 @@
 	<web-resource name="Admin Web Resources" key="resources"> 
   		<dependency>com.atlassian.auiplugin:ajs</dependency> 
   		<resource type="download" name="js/hub-admin.js" location="js/hub-admin.js"/> 
+  		<resource type="download" name="hub-atlassian-config.css" location="/css/hub-atlassian-config.css"/>
 	</web-resource>
 	
 	<component-import key="pluginSettingsFactory" interface="com.atlassian.sal.api.pluginsettings.PluginSettingsFactory" />

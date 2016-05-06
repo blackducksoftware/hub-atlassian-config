@@ -7,49 +7,88 @@
   <body>
     <form id="hub-admin" class="aui">
       <div class="field-group">
-        <label for="name">$i18n.getText("hub.integration.admin.url.label")</label>
-        <input type="text" id="hubServerUrl" name="hubServerUrl" class="text">
+        <label for="hubServerUrl">$i18n.getText("hub.integration.admin.url.label")<span class="aui-icon icon-required"> $i18n.getText("hub.integration.admin.required")</span></label>
+        <input type="text" id="hubServerUrl" name="hubServerUrl" class="text long-field">
       </div>
       <div class="field-group">
-        <label for="time">$i18n.getText("hub.integration.admin.username.label")</label>
-        <input type="text" id="hubUsername" name="hubUsername" class="text">
+      	<label> </label>
+      	<div id="hubServerUrlError" class="error errorHidden"></div>
+      </div>
+      
+      <div class="field-group">
+        <label for="hubUsername">$i18n.getText("hub.integration.admin.username.label")<span class="aui-icon icon-required"> $i18n.getText("hub.integration.admin.required")</span></label>
+        <input type="text" id="hubUsername" name="hubUsername" class="text long-field">
       </div>
       <div class="field-group">
-        <label for="time">$i18n.getText("hub.integration.admin.password.label")</label>
-        <input type="text" id="hubPassword" name="hubPassword" class="text">
+      	<label> </label>
+      	<div id="hubUsernameError" class="error errorHidden"></div>
       </div>
+        
       <div class="field-group">
-        <label for="time">$i18n.getText("hub.integration.admin.timeout.label")</label>
-        <input type="text" id="hubTimeout" name="hubTimeout" class="text">
+        <label for="hubPassword">$i18n.getText("hub.integration.admin.password.label")<span class="aui-icon icon-required"> $i18n.getText("hub.integration.admin.required")</span></label>
+        <input type="password" id="hubPassword" name="hubPassword" class="password long-field">
       </div>
+       <div class="field-group">
+      	<label> </label>
+      	<div id="hubPasswordError" class="error errorHidden"></div>
+      </div>
+      
       <div class="field-group">
-        <label for="time">$i18n.getText("hub.integration.admin.proxy.host.label")</label>
-        <input type="text" id="proxyHost" name="proxyHost" class="text">
+        <label for="hubTimeout">$i18n.getText("hub.integration.admin.timeout.label")<span class="aui-icon icon-required"> $i18n.getText("hub.integration.admin.required")</span></label>
+        <input type="text" id="hubTimeout" name="hubTimeout" class="text long-field">
       </div>
+       <div class="field-group">
+      	<label> </label>
+      	<div id="hubTimeoutError" class="error errorHidden"></div>
+      </div>
+      
       <div class="field-group">
-        <label for="time">$i18n.getText("hub.integration.admin.proxy.port.label")</label>
-        <input type="text" id="proxyPort" name="proxyPort" class="text">
+        <label for="proxyHost">$i18n.getText("hub.integration.admin.proxy.host.label")</label>
+        <input type="text" id="proxyHost" name="proxyHost" class="text long-field">
       </div>
+       <div class="field-group">
+      	<label> </label>
+      	<div id="proxyHostError" class="error errorHidden"></div>
+      </div>
+      
       <div class="field-group">
-        <label for="time">$i18n.getText("hub.integration.admin.proxy.noproxyhost.label")</label>
-        <input type="text" id="noProxyHost" name="noProxyHost" class="text">
+        <label for="proxyPort">$i18n.getText("hub.integration.admin.proxy.port.label")</label>
+        <input type="text" id="proxyPort" name="proxyPort" class="text long-field">
       </div>
+       <div class="field-group">
+      	<label> </label>
+      	<div id="proxyPortError" class="error errorHidden"></div>
+      </div>
+      
       <div class="field-group">
-        <label for="time">$i18n.getText("hub.integration.admin.proxy.username.label")</label>
-        <input type="text" id="proxyUsername" name="proxyUsername" class="text">
+        <label for="noProxyHost">$i18n.getText("hub.integration.admin.proxy.noproxyhost.label")</label>
+        <input type="text" id="noProxyHost" name="noProxyHost" class="text long-field">
       </div>
+       <div class="field-group">
+      	<label> </label>
+      	<div id="noProxyHostError" class="error errorHidden"></div>
+      </div>
+      
       <div class="field-group">
-        <label for="time">$i18n.getText("hub.integration.admin.proxy.password.label")</label>
-        <input type="text" id="proxyPassword" name="proxyPassword" class="text">
+        <label for="proxyUsername">$i18n.getText("hub.integration.admin.proxy.username.label")</label>
+        <input type="text" id="proxyUsername" name="proxyUsername" class="text long-field">
       </div>
-      <div class="aui-buttons">
-	      <div>
-	        <input onclick="updateConfig()" type="button" value="$i18n.getText("hub.integration.admin.save.label")" class="aui-button aui-button-primary">
-	      </div>
-	      <div>
-	        <input onclick="" type="button" value="$i18n.getText("hub.integration.admin.test.label")" class="aui-button aui-button-primary">
-	      </div>
+       <div class="field-group">
+      	<label> </label>
+      	<div id="proxyUsernameError" class="error errorHidden"></div>
       </div>
+      
+      <div class="field-group">
+        <label for="proxyPassword">$i18n.getText("hub.integration.admin.proxy.password.label")</label>
+        <input type="password" id="proxyPassword" name="proxyPassword" class="password long-field">
+      </div>
+       <div class="field-group">
+      	<label> </label>
+      	<div id="proxyPasswordError" class="error errorHidden"></div>
+      </div>
+      
+	  <input onclick="updateConfig()" type="button" value="$i18n.getText("hub.integration.admin.save.label")" class="aui-button aui-button-primary">
+	  <input onclick="" type="button" value="$i18n.getText("hub.integration.admin.test.label")" class="aui-button aui-button-primary">
     </form>
   </body>
 </html>

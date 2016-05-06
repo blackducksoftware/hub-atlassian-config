@@ -31,6 +31,8 @@ import com.atlassian.templaterenderer.TemplateRenderer;
 
 public class HubAdminServlet extends HttpServlet {
 
+	private static final long serialVersionUID = 8293922701957754642L;
+
 	private final UserManager userManager;
 	private final LoginUriProvider loginUriProvider;
 	private final TemplateRenderer renderer;
