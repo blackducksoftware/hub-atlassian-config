@@ -31,7 +31,10 @@ import org.apache.commons.lang3.StringUtils;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class HubServerConfigSerializable implements Serializable {
 
-	private static final long serialVersionUID = -6619125551471497995L;
+	private static final long serialVersionUID = 1103701190887487901L;
+
+	@XmlElement
+	private String testConnectionError;
 
 	@XmlElement
 	private String hubUrl;
@@ -94,6 +97,35 @@ public class HubServerConfigSerializable implements Serializable {
 
 	public HubServerConfigSerializable() {
 
+	}
+
+	public boolean hasErrors() {
+		boolean hasErrors = false;
+		if (StringUtils.isNotBlank(getHubUrlError())) {
+			hasErrors = true;
+		} else if (StringUtils.isNotBlank(getHubUrlError())) {
+			hasErrors = true;
+		} else if (StringUtils.isNotBlank(getTimeoutError())) {
+			hasErrors = true;
+		} else if (StringUtils.isNotBlank(getUsernameError())) {
+			hasErrors = true;
+		} else if (StringUtils.isNotBlank(getPasswordError())) {
+			hasErrors = true;
+		} else if (StringUtils.isNotBlank(getTestConnectionError())) {
+			hasErrors = true;
+		} else if (StringUtils.isNotBlank(getHubProxyHostError())) {
+			hasErrors = true;
+		} else if (StringUtils.isNotBlank(getHubProxyPortError())) {
+			hasErrors = true;
+		} else if (StringUtils.isNotBlank(getHubNoProxyHostsError())) {
+			hasErrors = true;
+		} else if (StringUtils.isNotBlank(getHubProxyUserError())) {
+			hasErrors = true;
+		} else if (StringUtils.isNotBlank(getHubProxyPasswordError())) {
+			hasErrors = true;
+		}
+
+		return hasErrors;
 	}
 
 	public String getMaskedPassword() {
@@ -310,6 +342,14 @@ public class HubServerConfigSerializable implements Serializable {
 		this.hubProxyPasswordLength = hubProxyPasswordLength;
 	}
 
+	public String getTestConnectionError() {
+		return testConnectionError;
+	}
+
+	public void setTestConnectionError(final String testConnectionError) {
+		this.testConnectionError = testConnectionError;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -330,6 +370,7 @@ public class HubServerConfigSerializable implements Serializable {
 		result = prime * result + ((password == null) ? 0 : password.hashCode());
 		result = prime * result + ((passwordError == null) ? 0 : passwordError.hashCode());
 		result = prime * result + passwordLength;
+		result = prime * result + ((testConnectionError == null) ? 0 : testConnectionError.hashCode());
 		result = prime * result + ((timeout == null) ? 0 : timeout.hashCode());
 		result = prime * result + ((timeoutError == null) ? 0 : timeoutError.hashCode());
 		result = prime * result + ((username == null) ? 0 : username.hashCode());
@@ -451,6 +492,13 @@ public class HubServerConfigSerializable implements Serializable {
 			return false;
 		}
 		if (passwordLength != other.passwordLength) {
+			return false;
+		}
+		if (testConnectionError == null) {
+			if (other.testConnectionError != null) {
+				return false;
+			}
+		} else if (!testConnectionError.equals(other.testConnectionError)) {
 			return false;
 		}
 		if (timeout == null) {

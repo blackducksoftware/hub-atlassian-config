@@ -15,10 +15,21 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *******************************************************************************/
+var statusMessageFieldId = "aui-hub-message-field";
+var statusMessageTitleId = "aui-hub-message-title";
+var statusMessageTitleTextId = "aui-hub-message-title-text";
+var statusMessageTextId = "aui-hub-message-text";
+
+var errorStatus = "error";
+var successStatus = "success";
+
+var spinning = false;
+
 function updateConfig() {
 		  AJS.$.ajax({
 			    url: AJS.contextPath() + "/rest/hub-integration/1.0/",
 			    type: "PUT",
+			    dataType: "json",
 			    contentType: "application/json",
 			    data: '{ "hubUrl": "' + encodeURI(AJS.$("#hubServerUrl").val())
 			    + '", "timeout": "' + encodeURI(AJS.$("#hubTimeout").val())
@@ -32,16 +43,33 @@ function updateConfig() {
 			    + '"}',
 			    processData: false,
 			    success: function() {
-			    	AJS.messages.success({
-			    		   title: 'Success!',
-			    		   body: '<p>Save successful.</p>'
-			    		});
+			    	hideError('hubServerUrlError');
+			    	hideError('hubTimeoutError');
+			    	hideError('hubUsernameError');
+			    	hideError('hubPasswordError');
+			    	hideError('proxyHostError');
+			    	hideError('proxyPortError');
+				    hideError('proxyUsernameError');
+				    hideError('proxyPasswordError');
+				    hideError('noProxyHostError');
+				      
+				    showStatusMessage(successStatus, 'Success!', 'Save successful.');
+				    stopProgressSpinner();
 			    },
-			    error: function(textStatus, errorThrown ){
-			    	AJS.messages.success({
-			    		   title: 'ERROR!',
-			    		   body: '<p>Save was not successful.</p>'
-			    		});
+			    error: function(response){
+			    	var config = JSON.parse(response.responseText);
+			    	handleError('hubServerUrlError', config.hubUrlError);
+				    handleError('hubTimeoutError', config.timeoutError);
+				    handleError('hubUsernameError', config.usernameError);
+				    handleError('hubPasswordError', config.passwordError);
+				    handleError('proxyHostError', config.hubProxyHostError);
+				    handleError('proxyPortError', config.hubProxyPortError);
+				    handleError('proxyUsernameError', config.hubProxyUserError);
+				    handleError('proxyPasswordError', config.hubProxyPasswordError);
+				    handleError('noProxyHostError', config.hubNoProxyHostsError);
+				    
+				    showStatusMessage(errorStatus, 'ERROR!', 'The configuration is not valid.');
+				    stopProgressSpinner();
 			    }
 			  });
 	}
@@ -69,9 +97,6 @@ function populateForm() {
 	      handleError('proxyUsernameError', config.hubProxyUserError);
 	      handleError('proxyPasswordError', config.hubProxyPasswordError);
 	      handleError('noProxyHostError', config.hubNoProxyHostsError);
-	    },
-	    error: function(textStatus, errorThrown){
-	    	
 	    }
 	  });
 	}
@@ -81,7 +106,6 @@ function updateValue(fieldId, configField) {
 		 AJS.$("#" + fieldId).val(decodeURI(configField));
     }
 }
-
 
 function handleError(fieldId, configField) {
 	if(configField){
@@ -93,12 +117,62 @@ function handleError(fieldId, configField) {
 
 function showError(fieldId, configField) {
 	  AJS.$("#" + fieldId).text(decodeURI(configField));
-  	  AJS.$("#" + fieldId).removeClass('errorHidden');
+  	  removeClassFromField(fieldId, 'hidden');
 }
 
 function hideError(fieldId) {
 	  AJS.$("#" + fieldId).text('');
-  	  AJS.$("#" + fieldId).addClass('errorHidden');
+  	  addClassToField(fieldId, 'hidden');
+}
+
+function showStatusMessage(status, statusTitle, message) {
+	resetStatusMessage();
+	if(status == errorStatus){
+		addClassToField(statusMessageFieldId, 'error');
+		addClassToField(statusMessageTitleId, 'icon-error');
+	} else if (status == successStatus){
+		addClassToField(statusMessageFieldId, 'success');
+		addClassToField(statusMessageTitleId, 'icon-success');
+	}
+	AJS.$("#" + statusMessageTitleTextId).text(statusTitle);
+	AJS.$("#" + statusMessageTextId).text(message);
+	removeClassFromField(statusMessageFieldId, 'hidden');
+}
+
+function resetStatusMessage() {
+	removeClassFromField(statusMessageFieldId,'error');
+	removeClassFromField(statusMessageFieldId,'success');
+	removeClassFromField(statusMessageTitleId,'icon-error');
+	removeClassFromField(statusMessageTitleId,'icon-success');
+	AJS.$("#" + statusMessageTitleTextId).text('');
+	AJS.$("#" + statusMessageTextId).text('');
+	addClassToField(statusMessageFieldId, 'hidden');
+}
+
+function addClassToField(fieldId, cssClass){
+	if(!AJS.$("#" + fieldId).hasClass(cssClass)){
+		AJS.$("#" + fieldId).addClass(cssClass);
+	}
+}
+
+function removeClassFromField(fieldId, cssClass){
+	if(AJS.$("#" + fieldId).hasClass(cssClass)){
+		AJS.$("#" + fieldId).removeClass(cssClass);
+	}
+}
+
+function startProgressSpinner(){
+	 if (!spinning) {
+		 AJS.$('.button-spinner').spin();
+		 spinning = true;
+	 }
+}
+
+function stopProgressSpinner(){
+	 if (spinning) {
+		 AJS.$('.button-spinner').spinStop();
+         spinning = false;
+	 }
 }
 
 (function ($) {
