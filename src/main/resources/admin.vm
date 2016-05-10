@@ -6,7 +6,7 @@
   </head>
   <body>
     <form id="hub-admin" class="aui">
-      <div class="button-spinner"></div>
+      <div class="spinner"></div>
       <div id="aui-hub-message-field" class="aui-message hidden">
       	<p class="title">
         	<span id="aui-hub-message-title" class="aui-icon"></span>
@@ -14,6 +14,12 @@
     	</p>
     	<p id="aui-hub-message-text"></p>
       </div>
+      
+      <div class="field-group">
+      	<label> </label>
+      	<div id="testConnectionError" class="error hidden"></div>
+      </div>
+      
       <div class="field-group">
         <label for="hubServerUrl">$i18n.getText("hub.integration.admin.url.label")<span class="aui-icon icon-required"> $i18n.getText("hub.integration.admin.required")</span></label>
         <input type="text" id="hubServerUrl" name="hubServerUrl" class="text long-field">
@@ -90,13 +96,13 @@
         <label for="proxyPassword">$i18n.getText("hub.integration.admin.proxy.password.label")</label>
         <input type="password" id="proxyPassword" name="proxyPassword" class="password long-field">
       </div>
-       <div class="field-group">
+      <div class="field-group">
       	<label> </label>
       	<div id="proxyPasswordError" class="error hidden"></div>
       </div>
       
 	  <input onclick="updateConfig(); startProgressSpinner();" type="button" value="$i18n.getText("hub.integration.admin.save.label")" class="aui-button aui-button-primary">
-	  <input onclick="" type="button" value="$i18n.getText("hub.integration.admin.test.label")" class="aui-button aui-button-primary">
+	  <input onclick="testConnection(); startProgressSpinner();" type="button" value="$i18n.getText("hub.integration.admin.test.label")" class="aui-button aui-button-primary">
     </form>
   </body>
 </html>

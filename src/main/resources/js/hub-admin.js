@@ -26,53 +26,64 @@ var successStatus = "success";
 var spinning = false;
 
 function updateConfig() {
-		  AJS.$.ajax({
-			    url: AJS.contextPath() + "/rest/hub-integration/1.0/",
-			    type: "PUT",
-			    dataType: "json",
-			    contentType: "application/json",
-			    data: '{ "hubUrl": "' + encodeURI(AJS.$("#hubServerUrl").val())
-			    + '", "timeout": "' + encodeURI(AJS.$("#hubTimeout").val())
-			    + '", "username": "' + encodeURI(AJS.$("#hubUsername").val())
-			    + '", "password": "' + encodeURI(AJS.$("#hubPassword").val())
-			    + '", "hubProxyHost": "' + encodeURI(AJS.$("#proxyHost").val())
-			    + '", "hubProxyPort": "' + encodeURI(AJS.$("#proxyPort").val())
-			    + '", "hubNoProxyHosts": "' + encodeURI(AJS.$("#noProxyHost").val())
-			    + '", "hubProxyUser": "' + encodeURI(AJS.$("#proxyUsername").val())
-			    + '", "hubProxyPassword": "' + encodeURI(AJS.$("#proxyPassword").val())
-			    + '"}',
-			    processData: false,
-			    success: function() {
-			    	hideError('hubServerUrlError');
-			    	hideError('hubTimeoutError');
-			    	hideError('hubUsernameError');
-			    	hideError('hubPasswordError');
-			    	hideError('proxyHostError');
-			    	hideError('proxyPortError');
-				    hideError('proxyUsernameError');
-				    hideError('proxyPasswordError');
-				    hideError('noProxyHostError');
-				      
-				    showStatusMessage(successStatus, 'Success!', 'Save successful.');
-				    stopProgressSpinner();
-			    },
-			    error: function(response){
-			    	var config = JSON.parse(response.responseText);
-			    	handleError('hubServerUrlError', config.hubUrlError);
-				    handleError('hubTimeoutError', config.timeoutError);
-				    handleError('hubUsernameError', config.usernameError);
-				    handleError('hubPasswordError', config.passwordError);
-				    handleError('proxyHostError', config.hubProxyHostError);
-				    handleError('proxyPortError', config.hubProxyPortError);
-				    handleError('proxyUsernameError', config.hubProxyUserError);
-				    handleError('proxyPasswordError', config.hubProxyPasswordError);
-				    handleError('noProxyHostError', config.hubNoProxyHostsError);
-				    
-				    showStatusMessage(errorStatus, 'ERROR!', 'The configuration is not valid.');
-				    stopProgressSpinner();
-			    }
-			  });
+		putConfig(AJS.contextPath() + '/rest/hub-integration/1.0/', 'Save successful.', 'The configuration is not valid.');
 	}
+
+function testConnection() {
+		putConfig(AJS.contextPath() + '/rest/hub-integration/1.0/testConnection', 'Test Connection successful.', 'Test Connection failed.');
+	}
+
+function putConfig(restUrl, successMessage, failureMessage) {
+	  AJS.$.ajax({
+		    url: restUrl,
+		    type: "PUT",
+		    dataType: "json",
+		    contentType: "application/json",
+		    data: '{ "hubUrl": "' + encodeURI(AJS.$("#hubServerUrl").val())
+		    + '", "timeout": "' + encodeURI(AJS.$("#hubTimeout").val())
+		    + '", "username": "' + encodeURI(AJS.$("#hubUsername").val())
+		    + '", "password": "' + encodeURI(AJS.$("#hubPassword").val())
+		    + '", "hubProxyHost": "' + encodeURI(AJS.$("#proxyHost").val())
+		    + '", "hubProxyPort": "' + encodeURI(AJS.$("#proxyPort").val())
+		    + '", "hubNoProxyHosts": "' + encodeURI(AJS.$("#noProxyHost").val())
+		    + '", "hubProxyUser": "' + encodeURI(AJS.$("#proxyUsername").val())
+		    + '", "hubProxyPassword": "' + encodeURI(AJS.$("#proxyPassword").val())
+		    + '"}',
+		    processData: false,
+		    success: function() {
+		    	hideError('hubServerUrlError');
+		    	hideError('hubTimeoutError');
+		    	hideError('hubUsernameError');
+		    	hideError('hubPasswordError');
+		    	hideError('proxyHostError');
+		    	hideError('proxyPortError');
+			    hideError('proxyUsernameError');
+			    hideError('proxyPasswordError');
+			    hideError('noProxyHostError');
+			    hideError('testConnectionError');
+			      
+			    showStatusMessage(successStatus, 'Success!', successMessage);
+			    stopProgressSpinner();
+		    },
+		    error: function(response){
+		    	var config = JSON.parse(response.responseText);
+		    	handleError('hubServerUrlError', config.hubUrlError);
+			    handleError('hubTimeoutError', config.timeoutError);
+			    handleError('hubUsernameError', config.usernameError);
+			    handleError('hubPasswordError', config.passwordError);
+			    handleError('proxyHostError', config.hubProxyHostError);
+			    handleError('proxyPortError', config.hubProxyPortError);
+			    handleError('proxyUsernameError', config.hubProxyUserError);
+			    handleError('proxyPasswordError', config.hubProxyPasswordError);
+			    handleError('noProxyHostError', config.hubNoProxyHostsError);
+			    handleError('testConnectionError', config.testConnectionError);
+			    
+			    showStatusMessage(errorStatus, 'ERROR!', failureMessage);
+			    stopProgressSpinner();
+		    }
+		  });
+}
+
 function populateForm() {
 	  AJS.$.ajax({
 	    url: AJS.contextPath() + "/rest/hub-integration/1.0/",
@@ -163,14 +174,15 @@ function removeClassFromField(fieldId, cssClass){
 
 function startProgressSpinner(){
 	 if (!spinning) {
-		 AJS.$('.button-spinner').spin();
+		 var spinner = AJS.$('.spinner');
+		 AJS.$('.spinner').spin('large');
 		 spinning = true;
 	 }
 }
 
 function stopProgressSpinner(){
 	 if (spinning) {
-		 AJS.$('.button-spinner').spinStop();
+		 AJS.$('.spinner').spinStop();
          spinning = false;
 	 }
 }

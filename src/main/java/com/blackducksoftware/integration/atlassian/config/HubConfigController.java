@@ -17,6 +17,9 @@
  *******************************************************************************/
 package com.blackducksoftware.integration.atlassian.config;
 
+import java.net.URISyntaxException;
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -30,6 +33,8 @@ import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.restlet.engine.Engine;
+import org.restlet.engine.connector.HttpClientHelper;
 
 import com.atlassian.sal.api.pluginsettings.PluginSettings;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
@@ -37,11 +42,14 @@ import com.atlassian.sal.api.transaction.TransactionCallback;
 import com.atlassian.sal.api.transaction.TransactionTemplate;
 import com.atlassian.sal.api.user.UserManager;
 import com.blackducksoftware.integration.atlassian.utils.HubConfigKeys;
+import com.blackducksoftware.integration.hub.HubIntRestService;
 import com.blackducksoftware.integration.hub.builder.HubServerConfigBuilder;
 import com.blackducksoftware.integration.hub.builder.ValidationResultEnum;
 import com.blackducksoftware.integration.hub.builder.ValidationResults;
 import com.blackducksoftware.integration.hub.encryption.PasswordEncrypter;
+import com.blackducksoftware.integration.hub.exception.BDRestException;
 import com.blackducksoftware.integration.hub.exception.EncryptionException;
+import com.blackducksoftware.integration.hub.exception.HubIntegrationException;
 import com.blackducksoftware.integration.hub.global.GlobalFieldKey;
 import com.blackducksoftware.integration.hub.global.HubCredentialsFieldEnum;
 import com.blackducksoftware.integration.hub.global.HubProxyInfoFieldEnum;
@@ -158,47 +166,12 @@ public class HubConfigController {
 			public Object doInTransaction() {
 				final PluginSettings settings = pluginSettingsFactory.createGlobalSettings();
 
-				final HubServerConfigBuilder serverConfigBuilder = new HubServerConfigBuilder();
-				serverConfigBuilder.setHubUrl(config.getHubUrl());
-				serverConfigBuilder.setTimeout(config.getTimeout());
-				serverConfigBuilder.setUsername(config.getUsername());
-				if (StringUtils.isBlank(config.getPassword())) {
-					serverConfigBuilder.setPassword(null);
-					serverConfigBuilder.setPasswordLength(0);
-				} else if (StringUtils.isNotBlank(config.getPassword()) && !config.isPasswordMasked()) {
-					serverConfigBuilder.setPassword(config.getPassword());
-					serverConfigBuilder.setPasswordLength(config.getPassword().length());
-				} else {
-					serverConfigBuilder.setPassword(getValue(settings, HubConfigKeys.CONFIG_HUB_PASS));
-					serverConfigBuilder.setPasswordLength(
-							NumberUtils.toInt(getValue(settings, HubConfigKeys.CONFIG_HUB_PASS_LENGTH)));
-				}
-				serverConfigBuilder.setProxyHost(config.getHubProxyHost());
-				serverConfigBuilder.setProxyPort(config.getHubProxyPort());
-				serverConfigBuilder.setIgnoredProxyHosts(config.getHubNoProxyHosts());
-				serverConfigBuilder.setProxyUsername(config.getHubProxyUser());
-
-				if (StringUtils.isBlank(config.getHubProxyPassword())) {
-					serverConfigBuilder.setProxyPassword(null);
-					serverConfigBuilder.setProxyPasswordLength(0);
-				} else if (StringUtils.isNotBlank(config.getHubProxyPassword()) && !config.isProxyPasswordMasked()) {
-					// only update the stored password if it is not the masked
-					// password used for display
-					serverConfigBuilder.setProxyPassword(config.getHubProxyPassword());
-					serverConfigBuilder.setProxyPasswordLength(config.getHubProxyPassword().length());
-				} else {
-					serverConfigBuilder.setProxyPassword(getValue(settings, HubConfigKeys.CONFIG_PROXY_PASS));
-					serverConfigBuilder.setProxyPasswordLength(
-							NumberUtils.toInt(getValue(settings, HubConfigKeys.CONFIG_PROXY_PASS_LENGTH)));
-				}
+				final HubServerConfigBuilder serverConfigBuilder = setConfigBuilderFromSerializableConfig(config,
+						settings);
 
 				final ValidationResults<GlobalFieldKey, HubServerConfig> serverConfigResults = serverConfigBuilder
 						.build();
 				setConfigFromResult(config, serverConfigResults);
-
-				if (config.hasErrors()) {
-					return config;
-				}
 
 				setValue(settings, HubConfigKeys.CONFIG_HUB_URL, config.getHubUrl());
 				setValue(settings, HubConfigKeys.CONFIG_HUB_USER, config.getUsername());
@@ -220,13 +193,13 @@ public class HubConfigController {
 				setValue(settings, HubConfigKeys.CONFIG_PROXY_NO_HOST, config.getHubNoProxyHosts());
 				setValue(settings, HubConfigKeys.CONFIG_PROXY_USER, config.getHubProxyUser());
 
-				String proxyPassword = config.getHubProxyPassword();
+				final String proxyPassword = config.getHubProxyPassword();
 				if (StringUtils.isNotBlank(proxyPassword) && !config.isProxyPasswordMasked()) {
 					// only update the stored password if it is not the masked
 					// password used for display
 					try {
-						proxyPassword = PasswordEncrypter.encrypt(proxyPassword);
-						setValue(settings, HubConfigKeys.CONFIG_PROXY_PASS, proxyPassword);
+						final String encryptedProxyPassword = PasswordEncrypter.encrypt(proxyPassword);
+						setValue(settings, HubConfigKeys.CONFIG_PROXY_PASS, encryptedProxyPassword);
 						setValue(settings, HubConfigKeys.CONFIG_PROXY_PASS_LENGTH,
 								String.valueOf(proxyPassword.length()));
 					} catch (IllegalArgumentException | EncryptionException e) {
@@ -235,170 +208,144 @@ public class HubConfigController {
 				return null;
 			}
 		});
+
+		if (config.hasErrors()) {
+			return Response.ok(response).status(Status.BAD_REQUEST).build();
+		}
+		return Response.noContent().build();
+	}
+
+	@Path("/testConnection")
+	@PUT
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response testConnection(final HubServerConfigSerializable config,
+			@Context final HttpServletRequest request) {
+		final String username = userManager.getRemoteUsername(request);
+		if (username == null || !userManager.isSystemAdmin(username)) {
+			return Response.status(Status.UNAUTHORIZED).build();
+		}
+
+		final Object response = transactionTemplate.execute(new
+				TransactionCallback() {
+			@Override
+			public Object doInTransaction() {
+				final PluginSettings settings =
+						pluginSettingsFactory.createGlobalSettings();
+
+				final HubServerConfigBuilder serverConfigBuilder = setConfigBuilderFromSerializableConfig(config,
+						settings);
+
+				final ValidationResults<GlobalFieldKey, HubServerConfig>
+				serverConfigResults = serverConfigBuilder.build();
+				setConfigFromResult(config, serverConfigResults);
+
+				if (config.hasErrors()) {
+					return config;
+				} else {
+					Engine.register(false);
+					Engine.getInstance().getRegisteredClients().add(new HttpClientHelper(null));
+					final HubServerConfig serverConfig = serverConfigResults.getConstructedObject();
+					final HubIntRestService restService = new HubIntRestService(serverConfig.getHubUrl().toString());
+					restService.setProxyProperties(serverConfig.getProxyInfo());
+					restService.setTimeout(serverConfig.getTimeout());
+					try {
+						final int responseCode = restService.setCookies(
+								serverConfig.getGlobalCredentials().getUsername(),
+								serverConfig.getGlobalCredentials().getDecryptedPassword());
+
+						if (responseCode == 200 || responseCode == 204 || responseCode == 202) {
+							return null;
+						} else if (responseCode == 401) {
+							// If User is Not Authorized, 401 error, an
+							// exception should be
+							// thrown by the ClientResource
+							config.setUsernameError(
+									"Username and Password are invalid for : " + serverConfig.getHubUrl());
+
+						} else {
+							config.setTestConnectionError(
+									"There was a problem connecting to the server, Error Code : " + responseCode);
+						}
+					} catch (IllegalArgumentException | HubIntegrationException | URISyntaxException | BDRestException
+							| EncryptionException e) {
+						if (e.getMessage().contains("(401)")) {
+							config.setUsernameError(
+									"Username and Password are invalid for : " + serverConfig.getHubUrl());
+						} else if (e.getMessage().contains("(407)")) {
+							config.setHubProxyUserError("Proxy Username and Password are invalid for : "
+									+ serverConfig.getProxyInfo().getHost());
+						} else {
+							config.setTestConnectionError(e.toString());
+						}
+					}
+					return config;
+				}
+			}
+		});
 		if (response != null) {
 			return Response.ok(response).status(Status.BAD_REQUEST).build();
 		}
 		return Response.noContent().build();
 	}
 
-	// @Path("/testConnection")
-	// @PUT
-	// @Consumes(MediaType.APPLICATION_JSON)
-	// public Response testConnection(final HubServerConfigSerializable config,
-	// @Context final HttpServletRequest request) {
-	// final String username = userManager.getRemoteUsername(request);
-	// if (username == null || !userManager.isSystemAdmin(username)) {
-	// return Response.status(Status.UNAUTHORIZED).build();
-	// }
-	//
-	// final Object response = transactionTemplate.execute(new
-	// TransactionCallback() {
-	// @Override
-	// public Object doInTransaction() {
-	// final PluginSettings settings =
-	// pluginSettingsFactory.createGlobalSettings();
-	//
-	// final HubServerConfigBuilder serverConfigBuilder = new
-	// HubServerConfigBuilder();
-	// serverConfigBuilder.setHubUrl(config.getHubUrl());
-	// try {
-	// serverConfigBuilder.setTimeout(config.getTimeout());
-	// } catch (final IllegalArgumentException e) {
-	// config.setTimeoutError(e.getMessage());
-	// }
-	// serverConfigBuilder.setUsername(config.getUsername());
-	//
-	// if (StringUtils.isBlank(config.getPassword())) {
-	// serverConfigBuilder.setPassword(null);
-	// serverConfigBuilder.setPasswordLength(0);
-	// } else if (StringUtils.isNotBlank(config.getPassword()) &&
-	// !config.isPasswordMasked()) {
-	// serverConfigBuilder.setPassword(config.getPassword());
-	// serverConfigBuilder.setPasswordLength(config.getPassword().length());
-	// } else {
-	// serverConfigBuilder.setPassword(getValue(settings,
-	// HubConfigKeys.CONFIG_HUB_PASS));
-	// serverConfigBuilder.setPasswordLength(
-	// NumberUtils.toInt(getValue(settings,
-	// HubConfigKeys.CONFIG_HUB_PASS_LENGTH)));
-	// }
-	// serverConfigBuilder.setProxyHost(config.getHubProxyHost());
-	// serverConfigBuilder.setProxyPort(NumberUtils.toInt(config.getHubProxyPort()));
-	// serverConfigBuilder.setIgnoredProxyHosts(config.getHubNoProxyHosts());
-	// serverConfigBuilder.setProxyUsername(config.getHubProxyUser());
-	//
-	// if (StringUtils.isBlank(config.getHubProxyPassword())) {
-	// serverConfigBuilder.setProxyPassword(null);
-	// serverConfigBuilder.setProxyPasswordLength(0);
-	// } else if (StringUtils.isNotBlank(config.getHubProxyPassword()) &&
-	// !config.isProxyPasswordMasked()) {
-	// // only update the stored password if it is not the masked
-	// // password used for display
-	// serverConfigBuilder.setProxyPassword(config.getHubProxyPassword());
-	// serverConfigBuilder.setProxyPasswordLength(config.getHubProxyPassword().length());
-	// } else {
-	// serverConfigBuilder.setProxyPassword(getValue(settings,
-	// HubConfigKeys.CONFIG_PROXY_PASS));
-	// serverConfigBuilder.setProxyPasswordLength(
-	// NumberUtils.toInt(getValue(settings,
-	// HubConfigKeys.CONFIG_PROXY_PASS_LENGTH)));
-	// }
-	//
-	// final ValidationResults<GlobalFieldKey, HubServerConfig>
-	// serverConfigResults = serverConfigBuilder
-	// .build();
-	// if (serverConfigResults.hasErrors()) {
-	// if (serverConfigResults.hasErrors(HubServerConfigFieldEnum.HUBURL)) {
-	// config.setHubUrlError(serverConfigResults.getResultString(HubServerConfigFieldEnum.HUBURL,
-	// ValidationResultEnum.ERROR));
-	// }
-	// if (serverConfigResults.hasErrors(HubServerConfigFieldEnum.HUBTIMEOUT)) {
-	// config.setTimeoutError(serverConfigResults.getResultString(HubServerConfigFieldEnum.HUBTIMEOUT,
-	// ValidationResultEnum.ERROR));
-	// }
-	// if (serverConfigResults.hasErrors(HubCredentialsFieldEnum.USERNAME)) {
-	// config.setUsernameError(serverConfigResults.getResultString(HubCredentialsFieldEnum.USERNAME,
-	// ValidationResultEnum.ERROR));
-	// }
-	// if (serverConfigResults.hasErrors(HubCredentialsFieldEnum.PASSWORD)) {
-	// config.setPasswordError(serverConfigResults.getResultString(HubCredentialsFieldEnum.PASSWORD,
-	// ValidationResultEnum.ERROR));
-	// }
-	// if (serverConfigResults.hasErrors(HubProxyInfoFieldEnum.PROXYHOST)) {
-	// config.setHubProxyHostError(serverConfigResults.getResultString(HubProxyInfoFieldEnum.PROXYHOST,
-	// ValidationResultEnum.ERROR));
-	// }
-	// if (serverConfigResults.hasErrors(HubProxyInfoFieldEnum.NOPROXYHOSTS)) {
-	// config.setHubNoProxyHostsError(serverConfigResults
-	// .getResultString(HubProxyInfoFieldEnum.NOPROXYHOSTS,
-	// ValidationResultEnum.ERROR));
-	// }
-	// if (serverConfigResults.hasErrors(HubProxyInfoFieldEnum.PROXYPORT)) {
-	// config.setHubProxyPortError(serverConfigResults.getResultString(HubProxyInfoFieldEnum.PROXYPORT,
-	// ValidationResultEnum.ERROR));
-	// }
-	// if (serverConfigResults.hasErrors(HubProxyInfoFieldEnum.PROXYUSERNAME)) {
-	// config.setHubProxyUserError(serverConfigResults
-	// .getResultString(HubProxyInfoFieldEnum.PROXYUSERNAME,
-	// ValidationResultEnum.ERROR));
-	// }
-	// if (serverConfigResults.hasErrors(HubProxyInfoFieldEnum.PROXYPASSWORD)) {
-	// config.setHubProxyPasswordError(serverConfigResults
-	// .getResultString(HubProxyInfoFieldEnum.PROXYPASSWORD,
-	// ValidationResultEnum.ERROR));
-	// }
-	// return config;
-	// }
-	//
-	// final HubServerConfig globalConfig =
-	// serverConfigResults.getConstructedObject();
-	// final HubIntRestService restService = new
-	// HubIntRestService(globalConfig.getHubUrl().toString());
-	// restService.setProxyProperties(globalConfig.getProxyInfo());
-	// try {
-	// final int responseCode =
-	// restService.setCookies(globalConfig.getGlobalCredentials().getUsername(),
-	// globalConfig.getGlobalCredentials().getDecryptedPassword());
-	//
-	//
-	// HubServerConfigSerializable response = new HubServerConfigSerializable();
-	//
-	// if (responseCode == 200 || responseCode == 204 || responseCode == 202) {
-	// return null;
-	// } else if (responseCode == 401) {
-	// // If User is Not Authorized, 401 error, an exception should be
-	// // thrown by the ClientResource
-	// return response.set
-	// } else {
-	// return
-	// FormValidation.error(Messages.HubBuildScan_getErrorConnectingTo_0_(responseCode));
-	// }
-	// } catch (final IllegalArgumentException e) {
-	// e.printStackTrace();
-	// } catch (final HubIntegrationException e) {
-	// e.printStackTrace();
-	// } catch (final URISyntaxException e) {
-	// e.printStackTrace();
-	// } catch (final BDRestException e) {
-	// e.printStackTrace();
-	// } catch (final EncryptionException e) {
-	// e.printStackTrace();
-	// }
-	// return null;
-	// }
-	// });
-	// if (response != null) {
-	// return Response.ok(response).status(Status.BAD_REQUEST).build();
-	// }
-	// return Response.noContent().build();
-	// }
+	private HubServerConfigBuilder setConfigBuilderFromSerializableConfig(final HubServerConfigSerializable config,
+			final PluginSettings settings) {
+		final HubServerConfigBuilder serverConfigBuilder = new HubServerConfigBuilder();
+		serverConfigBuilder.setHubUrl(config.getHubUrl());
+		try {
+			serverConfigBuilder.setTimeout(config.getTimeout());
+		} catch (final IllegalArgumentException e) {
+			config.setTimeoutError(e.getMessage());
+		}
+		serverConfigBuilder.setUsername(config.getUsername());
+
+		if (StringUtils.isBlank(config.getPassword())) {
+			serverConfigBuilder.setPassword(null);
+			serverConfigBuilder.setPasswordLength(0);
+		} else if (StringUtils.isNotBlank(config.getPassword()) && !config.isPasswordMasked()) {
+			serverConfigBuilder.setPassword(config.getPassword());
+			serverConfigBuilder.setPasswordLength(0);
+		} else {
+			serverConfigBuilder.setPassword(getValue(settings, HubConfigKeys.CONFIG_HUB_PASS));
+			serverConfigBuilder
+			.setPasswordLength(NumberUtils.toInt(getValue(settings, HubConfigKeys.CONFIG_HUB_PASS_LENGTH)));
+		}
+		serverConfigBuilder.setProxyHost(config.getHubProxyHost());
+		serverConfigBuilder.setProxyPort(config.getHubProxyPort());
+		serverConfigBuilder.setIgnoredProxyHosts(config.getHubNoProxyHosts());
+		serverConfigBuilder.setProxyUsername(config.getHubProxyUser());
+
+		if (StringUtils.isBlank(config.getHubProxyPassword())) {
+			serverConfigBuilder.setProxyPassword(null);
+			serverConfigBuilder.setProxyPasswordLength(0);
+		} else if (StringUtils.isNotBlank(config.getHubProxyPassword()) && !config.isProxyPasswordMasked()) {
+			// only update the stored password if it is not the masked
+			// password used for display
+			serverConfigBuilder.setProxyPassword(config.getHubProxyPassword());
+			serverConfigBuilder.setProxyPasswordLength(0);
+		} else {
+			serverConfigBuilder.setProxyPassword(getValue(settings, HubConfigKeys.CONFIG_PROXY_PASS));
+			serverConfigBuilder.setProxyPasswordLength(
+					NumberUtils.toInt(getValue(settings, HubConfigKeys.CONFIG_PROXY_PASS_LENGTH)));
+		}
+		return serverConfigBuilder;
+	}
 
 	private void setConfigFromResult(final HubServerConfigSerializable config,
 			final ValidationResults<GlobalFieldKey, HubServerConfig> serverConfigResults) {
 		if (serverConfigResults.hasErrors()) {
 			if (serverConfigResults.hasErrors(HubServerConfigFieldEnum.HUBURL)) {
-				config.setHubUrlError(serverConfigResults.getResultString(HubServerConfigFieldEnum.HUBURL,
+				final List<Throwable> throwables = serverConfigResults
+						.getResultThrowables(HubServerConfigFieldEnum.HUBURL, ValidationResultEnum.ERROR);
+
+				final StringBuilder urlErrorBuilder = new StringBuilder();
+				urlErrorBuilder.append(serverConfigResults.getResultString(HubServerConfigFieldEnum.HUBURL,
 						ValidationResultEnum.ERROR));
+				if (throwables != null && !throwables.isEmpty()) {
+					urlErrorBuilder.append(" ... ");
+					urlErrorBuilder.append(throwables.get(0).toString());
+				}
+				config.setHubUrlError(urlErrorBuilder.toString());
 			}
 			if (serverConfigResults.hasErrors(HubServerConfigFieldEnum.HUBTIMEOUT)) {
 				config.setTimeoutError(serverConfigResults.getResultString(HubServerConfigFieldEnum.HUBTIMEOUT,

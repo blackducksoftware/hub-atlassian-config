@@ -5,6 +5,44 @@
         <vendor name="${project.organization.name}" url="${project.organization.url}" />
         <param name="plugin-icon">images/pluginIcon.png</param>
         <param name="plugin-logo">images/pluginLogo.png</param>
+        <bundle-instructions>
+			<Import-Package>
+				com.atlassian.plugin.osgi.bridge.external,
+		        com.atlassian.sal.api;version="[2.11.1,2.11.1]",
+		        com.atlassian.sal.api.auth;version="[2.11.1,2.11.1]",
+		        com.atlassian.sal.api.pluginsettings;version="[2.11.1,2.11.1]",
+		        com.atlassian.sal.api.transaction;version="[2.11.1,2.11.1]",
+		        com.atlassian.sal.api.user;version="[2.11.1,2.11.1]",
+		        com.atlassian.templaterenderer;resolution:="optional",
+		        com.atlassian.templaterenderer.velocity.one.six,
+		        com.blackducksoftware.integration.build;resolution:="optional",
+		        com.blackducksoftware.integration.build.extractor;resolution:="optional",
+		        com.sun.net.httpserver;resolution:="optional",
+		        com.thoughtworks.xstream;resolution:="optional",
+		        com.thoughtworks.xstream.io;resolution:="optional",
+		        com.thoughtworks.xstream.io.xml;resolution:="optional",
+		        javax.crypto;resolution:="optional",
+		        javax.net.ssl;resolution:="optional",
+		        javax.security.auth.x500;resolution:="optional",
+		        javax.servlet;resolution:="optional",
+		        javax.servlet.http;resolution:="optional",
+		        javax.ws.rs;resolution:="optional",
+		        javax.ws.rs.core;resolution:="optional",
+		        javax.xml.bind.annotation;resolution:="optional",
+		        javax.xml.namespace;resolution:="optional",
+		        javax.xml.parsers;resolution:="optional",
+		        javax.xml.transform;resolution:="optional",
+		        javax.xml.transform.sax;resolution:="optional",
+		        javax.xml.transform.stream;resolution:="optional",
+		        javax.xml.xpath;resolution:="optional",
+		        org.w3c.dom;resolution:="optional",
+		        org.w3c.dom.ls;resolution:="optional",
+		        org.xml.sax;resolution:="optional",
+		        org.xml.sax.ext;resolution:="optional",
+		        org.xml.sax.helpers;resolution:="optional",
+		        sun.misc;resolution:="optional"
+			</Import-Package>
+		</bundle-instructions>
     </plugin-info>
     
     <!-- add our web resources -->
@@ -38,6 +76,7 @@
 	
 	<web-resource name="Admin Web Resources" key="resources"> 
   		<dependency>com.atlassian.auiplugin:ajs</dependency> 
+  		<dependency>com.atlassian.auiplugin:aui-spinner</dependency> 
   		<resource type="download" name="js/hub-admin.js" location="js/hub-admin.js"/> 
   		<resource type="download" name="hub-atlassian-config.css" location="/css/hub-atlassian-config.css"/>
 	</web-resource>
