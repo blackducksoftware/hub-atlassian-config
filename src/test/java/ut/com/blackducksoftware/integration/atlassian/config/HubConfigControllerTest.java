@@ -206,6 +206,7 @@ public class HubConfigControllerTest {
 		assertEquals(Integer.valueOf(0), Integer.valueOf(config.getPasswordLength()));
 		assertNull(config.getTimeout());
 		assertNull(config.getHubProxyHost());
+		assertNull(config.getHubProxyPort());
 		assertNull(config.getHubProxyUser());
 		assertNull(config.getHubProxyPassword());
 		assertEquals(Integer.valueOf(0), Integer.valueOf(config.getHubProxyPasswordLength()));
@@ -260,6 +261,7 @@ public class HubConfigControllerTest {
 		assertEquals(Integer.valueOf(0), Integer.valueOf(config.getPasswordLength()));
 		assertNull(config.getTimeout());
 		assertNull(config.getHubProxyHost());
+		assertNull(config.getHubProxyPort());
 		assertNull(config.getHubProxyUser());
 		assertNull(config.getHubProxyPassword());
 		assertEquals(Integer.valueOf(0), Integer.valueOf(config.getHubProxyPasswordLength()));
@@ -324,6 +326,7 @@ public class HubConfigControllerTest {
 		assertEquals(Integer.valueOf(0), Integer.valueOf(config.getPasswordLength()));
 		assertEquals(timeout, config.getTimeout());
 		assertNull(config.getHubProxyHost());
+		assertNull(config.getHubProxyPort());
 		assertNull(config.getHubProxyUser());
 		assertNull(config.getHubProxyPassword());
 		assertEquals(Integer.valueOf(0), Integer.valueOf(config.getHubProxyPasswordLength()));
@@ -388,6 +391,7 @@ public class HubConfigControllerTest {
 		assertEquals(Integer.valueOf(0), Integer.valueOf(config.getPasswordLength()));
 		assertEquals(timeout2, config.getTimeout());
 		assertNull(config.getHubProxyHost());
+		assertNull(config.getHubProxyPort());
 		assertNull(config.getHubProxyUser());
 		assertNull(config.getHubProxyPassword());
 		assertEquals(Integer.valueOf(0), Integer.valueOf(config.getHubProxyPasswordLength()));
@@ -469,6 +473,7 @@ public class HubConfigControllerTest {
 		assertEquals(Integer.valueOf(0), Integer.valueOf(config.getPasswordLength()));
 		assertNull(config.getTimeout());
 		assertNull(config.getHubProxyHost());
+		assertNull(config.getHubProxyPort());
 		assertNull(config.getHubProxyUser());
 		assertNull(config.getHubProxyPassword());
 		assertEquals(Integer.valueOf(0), Integer.valueOf(config.getHubProxyPasswordLength()));
@@ -523,6 +528,7 @@ public class HubConfigControllerTest {
 		assertEquals(Integer.valueOf(0), Integer.valueOf(config.getPasswordLength()));
 		assertNull(config.getTimeout());
 		assertNull(config.getHubProxyHost());
+		assertNull(config.getHubProxyPort());
 		assertNull(config.getHubProxyUser());
 		assertNull(config.getHubProxyPassword());
 		assertEquals(Integer.valueOf(0), Integer.valueOf(config.getHubProxyPasswordLength()));
