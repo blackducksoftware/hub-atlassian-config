@@ -8,11 +8,11 @@
         <bundle-instructions>
 			<Import-Package>
 				com.atlassian.plugin.osgi.bridge.external,
-		        com.atlassian.sal.api;version="[2.11.1,2.11.1]",
-		        com.atlassian.sal.api.auth;version="[2.11.1,2.11.1]",
-		        com.atlassian.sal.api.pluginsettings;version="[2.11.1,2.11.1]",
-		        com.atlassian.sal.api.transaction;version="[2.11.1,2.11.1]",
-		        com.atlassian.sal.api.user;version="[2.11.1,2.11.1]",
+		        com.atlassian.sal.api,
+		        com.atlassian.sal.api.auth,
+		        com.atlassian.sal.api.pluginsettings,
+		        com.atlassian.sal.api.transaction,
+		        com.atlassian.sal.api.user,
 		        com.atlassian.templaterenderer;resolution:="optional",
 		        com.atlassian.templaterenderer.velocity.one.six,
 		        com.blackducksoftware.integration.build;resolution:="optional",
