@@ -532,5 +532,53 @@ public class HubServerConfigSerializable implements Serializable {
 		return true;
 	}
 
+	@Override
+	public String toString() {
+		final StringBuilder builder = new StringBuilder();
+		builder.append("HubServerConfigSerializable [testConnectionError=");
+		builder.append(testConnectionError);
+		builder.append(", hubUrl=");
+		builder.append(hubUrl);
+		builder.append(", hubUrlError=");
+		builder.append(hubUrlError);
+		builder.append(", timeout=");
+		builder.append(timeout);
+		builder.append(", timeoutError=");
+		builder.append(timeoutError);
+		builder.append(", username=");
+		builder.append(username);
+		builder.append(", usernameError=");
+		builder.append(usernameError);
+		builder.append(", password=");
+		builder.append(password);
+		builder.append(", passwordError=");
+		builder.append(passwordError);
+		builder.append(", passwordLength=");
+		builder.append(passwordLength);
+		builder.append(", hubProxyHost=");
+		builder.append(hubProxyHost);
+		builder.append(", hubProxyHostError=");
+		builder.append(hubProxyHostError);
+		builder.append(", hubProxyPort=");
+		builder.append(hubProxyPort);
+		builder.append(", hubProxyPortError=");
+		builder.append(hubProxyPortError);
+		builder.append(", hubNoProxyHosts=");
+		builder.append(hubNoProxyHosts);
+		builder.append(", hubNoProxyHostsError=");
+		builder.append(hubNoProxyHostsError);
+		builder.append(", hubProxyUser=");
+		builder.append(hubProxyUser);
+		builder.append(", hubProxyUserError=");
+		builder.append(hubProxyUserError);
+		builder.append(", hubProxyPassword=");
+		builder.append(hubProxyPassword);
+		builder.append(", hubProxyPasswordError=");
+		builder.append(hubProxyPasswordError);
+		builder.append(", hubProxyPasswordLength=");
+		builder.append(hubProxyPasswordLength);
+		builder.append("]");
+		return builder.toString();
+	}
 
 }

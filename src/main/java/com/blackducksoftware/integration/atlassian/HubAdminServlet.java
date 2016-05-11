@@ -54,7 +54,7 @@ public class HubAdminServlet extends HttpServlet {
 		}
 
 		response.setContentType("text/html;charset=utf-8");
-		renderer.render("admin.vm", response.getWriter());
+		renderer.render("hub-admin.vm", response.getWriter());
 	}
 
 	private void redirectToLogin(final HttpServletRequest request, final HttpServletResponse response)
