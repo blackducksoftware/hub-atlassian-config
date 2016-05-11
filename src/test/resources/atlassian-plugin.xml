@@ -6,7 +6,7 @@
     </plugin-info>
 
     <!-- from our base plugin -->
-    <component-import key="myComponent" interface="com.blackducksoftware.integration.atlassian.MyPluginComponent"/>
+    <component-import key="bdHubRefApp" interface="com.blackducksoftware.integration.atlassian.BdHubRefApp"/>
 
     <!-- from the product container -->
     <component-import key="applicationProperties" interface="com.atlassian.sal.api.ApplicationProperties" />

@@ -17,7 +17,24 @@
  *******************************************************************************/
 package com.blackducksoftware.integration.atlassian;
 
-public interface MyPluginComponent
+import com.atlassian.sal.api.ApplicationProperties;
+
+public class BdHubRefAppImpl implements BdHubRefApp
 {
-    String getName();
+    private final ApplicationProperties applicationProperties;
+
+    public BdHubRefAppImpl(ApplicationProperties applicationProperties)
+    {
+        this.applicationProperties = applicationProperties;
+    }
+
+    public String getName()
+    {
+        if(null != applicationProperties)
+        {
+            return "bdHubRefApp:" + applicationProperties.getDisplayName();
+        }
+        
+        return "bdHubRefApp";
+    }
 }

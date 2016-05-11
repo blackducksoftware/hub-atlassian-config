@@ -15,31 +15,20 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *******************************************************************************/
-package it.com.blackducksoftware.integration.atlassian;
+package ut.com.blackducksoftware.integration.atlassian;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import com.atlassian.plugins.osgi.test.AtlassianPluginsTestRunner;
-import com.blackducksoftware.integration.atlassian.MyPluginComponent;
-import com.atlassian.sal.api.ApplicationProperties;
+import com.blackducksoftware.integration.atlassian.BdHubRefApp;
+import com.blackducksoftware.integration.atlassian.BdHubRefAppImpl;
 
 import static org.junit.Assert.assertEquals;
 
-@RunWith(AtlassianPluginsTestRunner.class)
-public class MyComponentWiredTest
+public class BdHubRefAppUnitTest
 {
-    private final ApplicationProperties applicationProperties;
-    private final MyPluginComponent myPluginComponent;
-
-    public MyComponentWiredTest(ApplicationProperties applicationProperties,MyPluginComponent myPluginComponent)
-    {
-        this.applicationProperties = applicationProperties;
-        this.myPluginComponent = myPluginComponent;
-    }
-
     @Test
     public void testMyName()
     {
-        assertEquals("names do not match!", "myComponent:" + applicationProperties.getDisplayName(),myPluginComponent.getName());
+        BdHubRefApp component = new BdHubRefAppImpl(null);
+        assertEquals("names do not match!", "bdHubRefApp",component.getName());
     }
 }

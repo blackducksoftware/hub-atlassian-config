@@ -57,8 +57,8 @@
     </web-resource>
     
     <!-- publish our component -->
-    <component key="myPluginComponent" class="com.blackducksoftware.integration.atlassian.MyPluginComponentImpl" public="true">
-        <interface>com.blackducksoftware.integration.atlassian.MyPluginComponent</interface>
+    <component key="bdHubRefApp" class="com.blackducksoftware.integration.atlassian.BdHubRefAppImpl" public="true">
+        <interface>com.blackducksoftware.integration.atlassian.BdHubRefApp</interface>
     </component>
     
     <!-- import from the product container -->
