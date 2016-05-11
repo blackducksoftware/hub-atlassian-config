@@ -102,7 +102,6 @@ public class HubConfigController {
 				serverConfigBuilder.setUsername(username);
 				serverConfigBuilder.setPassword(password);
 				serverConfigBuilder.setPasswordLength(NumberUtils.toInt(passwordLength));
-
 				serverConfigBuilder.setProxyHost(proxyHost);
 				serverConfigBuilder.setProxyPort(proxyPort);
 				serverConfigBuilder.setIgnoredProxyHosts(noProxyHosts);
@@ -115,7 +114,6 @@ public class HubConfigController {
 
 				config.setHubUrl(hubUrl);
 				config.setUsername(username);
-
 				if (StringUtils.isNotBlank(password)) {
 					final int passwordLengthInt = getIntFromObject(passwordLength);
 					if (passwordLengthInt > 0) {
@@ -123,15 +121,11 @@ public class HubConfigController {
 						config.setPassword(config.getMaskedPassword());
 					}
 				}
-
 				config.setTimeout(timeout);
-
 				config.setHubProxyHost(proxyHost);
 				config.setHubProxyPort(proxyPort);
-
 				config.setHubNoProxyHosts(noProxyHosts);
 				config.setHubProxyUser(proxyUser);
-
 				if (StringUtils.isNotBlank(proxyPassword)) {
 					final int hubProxyPasswordLength = getIntFromObject(proxyPasswordLength);
 					if (hubProxyPasswordLength > 0) {
@@ -161,7 +155,7 @@ public class HubConfigController {
 			return Response.status(Status.UNAUTHORIZED).build();
 		}
 
-		final Object response = transactionTemplate.execute(new TransactionCallback() {
+		transactionTemplate.execute(new TransactionCallback() {
 			@Override
 			public Object doInTransaction() {
 				final PluginSettings settings = pluginSettingsFactory.createGlobalSettings();
@@ -186,10 +180,13 @@ public class HubConfigController {
 						setValue(settings, HubConfigKeys.CONFIG_HUB_PASS_LENGTH, String.valueOf(password.length()));
 					} catch (IllegalArgumentException | EncryptionException e) {
 					}
+				} else if (StringUtils.isBlank(password)) {
+					setValue(settings, HubConfigKeys.CONFIG_HUB_PASS, null);
+					setValue(settings, HubConfigKeys.CONFIG_HUB_PASS_LENGTH, null);
 				}
-				setValue(settings, HubConfigKeys.CONFIG_HUB_TIMEOUT, String.valueOf(config.getTimeout()));
+				setValue(settings, HubConfigKeys.CONFIG_HUB_TIMEOUT, config.getTimeout());
 				setValue(settings, HubConfigKeys.CONFIG_PROXY_HOST, config.getHubProxyHost());
-				setValue(settings, HubConfigKeys.CONFIG_PROXY_PORT, String.valueOf(config.getHubProxyPort()));
+				setValue(settings, HubConfigKeys.CONFIG_PROXY_PORT, config.getHubProxyPort());
 				setValue(settings, HubConfigKeys.CONFIG_PROXY_NO_HOST, config.getHubNoProxyHosts());
 				setValue(settings, HubConfigKeys.CONFIG_PROXY_USER, config.getHubProxyUser());
 
@@ -204,13 +201,16 @@ public class HubConfigController {
 								String.valueOf(proxyPassword.length()));
 					} catch (IllegalArgumentException | EncryptionException e) {
 					}
+				} else if (StringUtils.isBlank(password)) {
+					setValue(settings, HubConfigKeys.CONFIG_PROXY_PASS, null);
+					setValue(settings, HubConfigKeys.CONFIG_PROXY_PASS_LENGTH, null);
 				}
 				return null;
 			}
 		});
 
 		if (config.hasErrors()) {
-			return Response.ok(response).status(Status.BAD_REQUEST).build();
+			return Response.ok(config).status(Status.BAD_REQUEST).build();
 		}
 		return Response.noContent().build();
 	}
@@ -225,7 +225,7 @@ public class HubConfigController {
 			return Response.status(Status.UNAUTHORIZED).build();
 		}
 
-		final Object response = transactionTemplate.execute(new
+		transactionTemplate.execute(new
 				TransactionCallback() {
 			@Override
 			public Object doInTransaction() {
@@ -282,8 +282,8 @@ public class HubConfigController {
 				}
 			}
 		});
-		if (response != null) {
-			return Response.ok(response).status(Status.BAD_REQUEST).build();
+		if (config.hasErrors()) {
+			return Response.ok(config).status(Status.BAD_REQUEST).build();
 		}
 		return Response.noContent().build();
 	}
@@ -387,7 +387,11 @@ public class HubConfigController {
 	}
 
 	private void setValue(final PluginSettings settings, final String key, final Object value) {
-		settings.put(key, String.valueOf(value));
+		if (value == null) {
+			settings.remove(key);
+		} else {
+			settings.put(key, String.valueOf(value));
+		}
 	}
 
 }

@@ -144,7 +144,7 @@ public class HubServerConfigSerializable implements Serializable {
 		return isStringMasked(hubProxyPassword);
 	}
 
-	private String getMaskedString(final int length) {
+	public static String getMaskedString(final int length) {
 		if (length == 0) {
 			return null;
 		}

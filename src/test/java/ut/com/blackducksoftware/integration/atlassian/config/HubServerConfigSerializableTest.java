@@ -1,4 +1,4 @@
-package ut.com.blackducksoftware.integration.atlassian;
+package ut.com.blackducksoftware.integration.atlassian.config;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
