@@ -2,7 +2,7 @@
   <head>
     <title>$i18n.getText("hub.integration.admin.label")</title>
     <meta name="decorator" content="atl.admin" />
-   		$webResourceManager.requireResource("com.blackducksoftware.integration.hub-atlassian-config:resources")
+   		$webResourceManager.requireResource("com.blackducksoftware.integration.hub-atlassian-config:hub-atlassian-config-admin-resources")
   </head>
   <body>
     <form id="hub-admin" class="aui">
