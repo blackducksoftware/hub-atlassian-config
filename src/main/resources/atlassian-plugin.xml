@@ -45,17 +45,6 @@
 		</bundle-instructions>
     </plugin-info>
     
-    <!-- add our web resources -->
-    <web-resource key="hub-atlassian-config-resources" name="hub-atlassian-config Web Resources">
-        <dependency>com.atlassian.auiplugin:ajs</dependency>
-        
-        <resource type="download" name="hub-atlassian-config.css" location="/css/hub-atlassian-config.css"/>
-        <resource type="download" name="hub-atlassian-config.js" location="/js/hub-atlassian-config.js"/>
-        <resource type="download" name="images/" location="/images"/>
-
-        <context>hub-atlassian-config</context>
-    </web-resource>
-    
     <!-- publish our component -->
     <component key="bdHubRefApp" class="com.blackducksoftware.integration.atlassian.BdHubRefAppImpl" public="true">
         <interface>com.blackducksoftware.integration.atlassian.BdHubRefApp</interface>
@@ -74,11 +63,12 @@
 	
 	<resource type="i18n" name="i18n" location="com.blackducksoftware.integration.atlassian.i18n" />
 	
-	<web-resource name="Admin Web Resources" key="resources"> 
+	<web-resource name="Admin Web Resources" key="hub-atlassian-config-admin-resources"> 
   		<dependency>com.atlassian.auiplugin:ajs</dependency> 
   		<dependency>com.atlassian.auiplugin:aui-spinner</dependency> 
   		<resource type="download" name="js/hub-admin.js" location="js/hub-admin.js"/> 
   		<resource type="download" name="hub-atlassian-config.css" location="/css/hub-atlassian-config.css"/>
+  		 <context>hub-atlassian-config</context>
 	</web-resource>
 	
 	<component-import key="pluginSettingsFactory" interface="com.atlassian.sal.api.pluginsettings.PluginSettingsFactory" />
