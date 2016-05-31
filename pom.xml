@@ -3,6 +3,13 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
+	<parent>
+	    <groupId>com.blackducksoftware.integration</groupId>
+	    <artifactId>common-maven-parent</artifactId>
+	    <version>1.0.0</version>
+	    <relativePath>../common-maven-parent</relativePath>
+ 	</parent>
+
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.blackducksoftware.integration</groupId>
 	<artifactId>hub-atlassian-config</artifactId>
@@ -11,24 +18,20 @@
 	<name>hub-atlassian-config</name>
 	<description>This is the com.blackducksoftware.integration:hub-atlassian-config plugin for Atlassian Refapp.</description>
 
-	<organization>
-		<name>Blackduck Software</name>
-		<url>https://www2.blackducksoftware.com/</url>
-	</organization>
-	
-	<licenses>
-		<license>
-			<name>Apache 2.0</name>
-			<url>http://www.apache.org/licenses/LICENSE-2.0</url>
-		</license>
-	</licenses>
-
 	<repositories>
-		<repository>
-			<id>bds-int-public</id>
-			<url>https://updates.suite.blackducksoftware.com/integrations/</url>
-		</repository>
-		<repository>
+	    <repository>
+	      <id>jcenter</id>
+	      <url>https://jcenter.bintray.com</url>
+	    </repository>
+	    <!-- ekerwin(2016-05-26): this is included only to acquire the parent pom, where this information is sadly duplicated. -->
+	    <repository>
+	      <snapshots>
+	        <updatePolicy>always</updatePolicy>
+	      </snapshots>
+	      <id>bds-int-public</id>
+	      <url>https://updates.suite.blackducksoftware.com/integrations/</url>
+	    </repository>
+	    <repository>
 			<id>atlassian-public</id>
 			<url>https://maven.atlassian.com/repository/public</url>
 			<snapshots>
@@ -42,16 +45,7 @@
 			</releases>
 		</repository>
 	</repositories>
-	<distributionManagement>
-		<repository>
-			<id>bds-int-public</id>
-			<url>https://updates.suite.blackducksoftware.com/integrations/</url>
-		</repository>
-		<snapshotRepository>
-			<id>bds-int-public</id>
-			<url>https://updates.suite.blackducksoftware.com/integrations/</url>
-		</snapshotRepository>
-	</distributionManagement>
+
 	<pluginRepositories>
 		<pluginRepository>
 			<id>atlassian-public</id>
@@ -66,6 +60,7 @@
 			</snapshots>
 		</pluginRepository>
 	</pluginRepositories>
+	
 	<properties>
 		<refapp.version>2.22.0</refapp.version>
 		<refapp.platform.version>2.22.0</refapp.platform.version>
@@ -181,15 +176,6 @@
 				<extensions>true</extensions>
 				<configuration>
 					<productVersion>${refapp.version}</productVersion>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.1</version>
-				<configuration>
-					<source>1.7</source>
-					<target>1.7</target>
 				</configuration>
 			</plugin>
 		</plugins>
