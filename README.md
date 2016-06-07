@@ -1,14 +1,14 @@
-# hub-atlassian-config
-Shared configuration for Hub Atlassian Integrations
+## Overview ##
+Hub Server Configuration plugin for Atlassian products.  This plugin provides the ability to globally configure the Hub server to be used with other Atlassian plugins.  This plugin will provide an administrative screen to input and validate a connection to a Hub server.  This configuration data can then be read by other Atlassian plugins in order to connect to and access the Hub server.
+## Build ##
 
-Here are the SDK commands for developement:
+## Where can I get the latest release? ##
+You can download the latest source from GitHub: https://github.com/blackducksoftware/hub-atlassian-config. 
 
-* atlas-run   -- installs this plugin into the product and starts it on localhost
-* atlas-debug -- same as atlas-run, but allows a debugger to attach at port 5005
-* atlas-cli   -- after atlas-run or atlas-debug, opens a Maven command line window:
-                 - 'pi' reinstalls the plugin into the running product instance
-* atlas-help  -- prints description for all commands in the SDK
+You can download the latest release artifacts from GitHub: https://github.com/blackducksoftware/hub-atlassian-config/releases
 
-Full documentation is always available at:
+## Documentation ##
+All documentation for hub-atlassian-config can be found on the base project:  https://github.com/blackducksoftware/hub-atlassian-config/wiki
 
-https://developer.atlassian.com/display/DOCS/Introduction+to+the+Atlassian+Plugin+SDK
+## License ##
+Apache License 2.0
