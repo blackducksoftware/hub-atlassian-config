@@ -115,7 +115,9 @@
 		  
 		  <input onclick="testConnection(); startProgressSpinner();" type="button" value="$i18n.getText("hub.integration.admin.test.label")" class="aui-button aui-button-primary">
 		  
-		  <div id="progressSpinner" class="largeIcon fa fa-spinner fa-spin fa-fw" style="display: inline-block;"></div>
+		  <div id="progressSpinner" style="display: inline-block;">
+		  	<i class="largeIcon fa fa-spinner fa-spin fa-fw"></i>
+		  </div>
 	  </div>
     </form>
   </body>

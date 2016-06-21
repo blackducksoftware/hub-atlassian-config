@@ -112,6 +112,11 @@ function populateForm() {
 	      handleError('proxyUsernameError', config.hubProxyUserError);
 	      handleError('proxyPasswordError', config.hubProxyPasswordError);
 	      handleError('noProxyHostError', config.hubNoProxyHostsError);
+	    }, error: function(response){
+	    	alert("There was an error loading the configuration.");
+	    },
+	    complete: function(jqXHR, textStatus){
+	    	 stopProgressSpinner();
 	    }
 	  });
 	}
