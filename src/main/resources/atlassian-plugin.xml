@@ -65,9 +65,10 @@
 	
 	<web-resource name="Admin Web Resources" key="hub-atlassian-config-admin-resources"> 
   		<dependency>com.atlassian.auiplugin:ajs</dependency> 
-  		<dependency>com.atlassian.auiplugin:aui-spinner</dependency> 
   		<resource type="download" name="js/hub-admin.js" location="js/hub-admin.js"/> 
   		<resource type="download" name="hub-atlassian-config.css" location="/css/hub-atlassian-config.css"/>
+  		<resource type="download" name="fonts/" location="/font-awesome-4.5.0/fonts"/>
+        <resource type="download" name="font-awesome.min.css" location="/font-awesome-4.5.0/css/font-awesome.min.css"/>
   		 <context>hub-atlassian-config</context>
 	</web-resource>
 	
