@@ -26,8 +26,7 @@ var statusMessageTextId = "aui-hub-message-text";
 
 var errorStatus = "error";
 var successStatus = "success";
-
-var spinning = false;
+var hiddenClass = "hidden";
 
 function updateConfig() {
 		putConfig(AJS.contextPath() + '/rest/hub-integration/1.0/', 'Save successful.', 'The configuration is not valid.');
@@ -67,7 +66,6 @@ function putConfig(restUrl, successMessage, failureMessage) {
 			    hideError('testConnectionError');
 			      
 			    showStatusMessage(successStatus, 'Success!', successMessage);
-			    stopProgressSpinner();
 		    },
 		    error: function(response){
 		    	var config = JSON.parse(response.responseText);
@@ -83,7 +81,9 @@ function putConfig(restUrl, successMessage, failureMessage) {
 			    handleError('testConnectionError', config.testConnectionError);
 			    
 			    showStatusMessage(errorStatus, 'ERROR!', failureMessage);
-			    stopProgressSpinner();
+		    },
+		    complete: function(jqXHR, textStatus){
+		    	 stopProgressSpinner();
 		    }
 		  });
 }
@@ -112,6 +112,11 @@ function populateForm() {
 	      handleError('proxyUsernameError', config.hubProxyUserError);
 	      handleError('proxyPasswordError', config.hubProxyPasswordError);
 	      handleError('noProxyHostError', config.hubNoProxyHostsError);
+	    }, error: function(response){
+	    	alert("There was an error loading the configuration.");
+	    },
+	    complete: function(jqXHR, textStatus){
+	    	 stopProgressSpinner();
 	    }
 	  });
 	}
@@ -132,63 +137,98 @@ function handleError(fieldId, configField) {
 
 function showError(fieldId, configField) {
 	  AJS.$("#" + fieldId).text(decodeURI(configField));
-  	  removeClassFromField(fieldId, 'hidden');
+  	  removeClassFromFieldById(fieldId, hiddenClass);
 }
 
 function hideError(fieldId) {
 	  AJS.$("#" + fieldId).text('');
-  	  addClassToField(fieldId, 'hidden');
+  	  addClassToFieldById(fieldId, hiddenClass);
 }
 
 function showStatusMessage(status, statusTitle, message) {
 	resetStatusMessage();
 	if(status == errorStatus){
-		addClassToField(statusMessageFieldId, 'error');
-		addClassToField(statusMessageTitleId, 'icon-error');
+		addClassToFieldById(statusMessageFieldId, 'error');
+		addClassToFieldById(statusMessageTitleId, 'icon-error');
 	} else if (status == successStatus){
-		addClassToField(statusMessageFieldId, 'success');
-		addClassToField(statusMessageTitleId, 'icon-success');
+		addClassToFieldById(statusMessageFieldId, 'success');
+		addClassToFieldById(statusMessageTitleId, 'icon-success');
 	}
 	AJS.$("#" + statusMessageTitleTextId).text(statusTitle);
 	AJS.$("#" + statusMessageTextId).text(message);
-	removeClassFromField(statusMessageFieldId, 'hidden');
+	removeClassFromFieldById(statusMessageFieldId, hiddenClass);
 }
 
 function resetStatusMessage() {
-	removeClassFromField(statusMessageFieldId,'error');
-	removeClassFromField(statusMessageFieldId,'success');
-	removeClassFromField(statusMessageTitleId,'icon-error');
-	removeClassFromField(statusMessageTitleId,'icon-success');
+	removeClassFromFieldById(statusMessageFieldId,'error');
+	removeClassFromFieldById(statusMessageFieldId,'success');
+	removeClassFromFieldById(statusMessageTitleId,'icon-error');
+	removeClassFromFieldById(statusMessageTitleId,'icon-success');
 	AJS.$("#" + statusMessageTitleTextId).text('');
 	AJS.$("#" + statusMessageTextId).text('');
-	addClassToField(statusMessageFieldId, 'hidden');
+	addClassToFieldById(statusMessageFieldId, hiddenClass);
 }
 
-function addClassToField(fieldId, cssClass){
+function addClassToFieldById(fieldId, cssClass){
 	if(!AJS.$("#" + fieldId).hasClass(cssClass)){
 		AJS.$("#" + fieldId).addClass(cssClass);
 	}
 }
 
-function removeClassFromField(fieldId, cssClass){
+function removeClassFromFieldById(fieldId, cssClass){
 	if(AJS.$("#" + fieldId).hasClass(cssClass)){
 		AJS.$("#" + fieldId).removeClass(cssClass);
 	}
 }
 
+function addClassToField(field, cssClass){
+	if(!AJS.$(field).hasClass(cssClass)){
+		AJS.$(field).addClass(cssClass);
+	}
+}
+
+function removeClassFromField(field, cssClass){
+	if(AJS.$(field).hasClass(cssClass)){
+		AJS.$(field).removeClass(cssClass);
+	}
+}
+
+function toggleDisplay(icon, fieldId){
+	var iconObject = AJS.$(icon);
+	if(iconObject.hasClass('fa-angle-down')){
+		removeClassFromField(icon, 'fa-angle-down');
+		addClassToField(icon, 'fa-angle-right');
+		
+		addClassToFieldById(fieldId, hiddenClass);
+	} else if(iconObject.hasClass('fa-angle-right')){
+		removeClassFromField(icon, 'fa-angle-right');
+		addClassToField(icon, 'fa-angle-down');
+	
+		removeClassFromFieldById(fieldId, hiddenClass);
+	}
+}
+
 function startProgressSpinner(){
-	 if (!spinning) {
-		 var spinner = AJS.$('.spinner');
-		 AJS.$('.spinner').spin('large');
-		 spinning = true;
+	 var spinner = AJS.$('#progressSpinner');
+	 
+	 if(spinner.find("i").length == 0){
+		var newSpinnerIcon = AJS.$('<i>', {
+		});
+		AJS.$(newSpinnerIcon).addClass("largeIcon");
+		AJS.$(newSpinnerIcon).addClass("fa");
+		AJS.$(newSpinnerIcon).addClass("fa-spinner");
+		AJS.$(newSpinnerIcon).addClass("fa-spin");
+		AJS.$(newSpinnerIcon).addClass("fa-fw");
+		
+		newSpinnerIcon.appendTo(spinner);
 	 }
 }
 
 function stopProgressSpinner(){
-	 if (spinning) {
-		 AJS.$('.spinner').spinStop();
-         spinning = false;
-	 }
+	var spinner = AJS.$('#progressSpinner');
+	if(spinner.children().length > 0){
+		AJS.$(spinner).empty();
+	}
 }
 
 (function ($) {
