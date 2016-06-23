@@ -4,7 +4,6 @@
 
 .error {
 	color : #c00;
-	font-weight : bold;
 }
 
 .largeIcon {
@@ -52,4 +51,9 @@
 .fieldSection {
 	border : 1px solid !important;
 	padding : 10px 5px 5px 15px !important; 
+}
+
+.buttonContainer {
+	padding-top : 10px; 
+	float : right;
 }

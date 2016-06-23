@@ -20,7 +20,7 @@
       </div>
       
       <fieldset class="fieldSection">
-      	  <legend class="legend"><i class="fa fa-minus-circle" onclick="toggleDisplay(this,'serverConfigArea');"> </i> $i18n.getText("hub.integration.admin.serverConfig.label")</legend>
+      	  <legend class="legend"><i class="fa fa-angle-down" onclick="toggleDisplay(this,'serverConfigArea');"> </i> $i18n.getText("hub.integration.admin.serverConfig.label")</legend>
       	  <div id="serverConfigArea">
 		      <div class="field-group">
 		        <label class="label" for="hubServerUrl">$i18n.getText("hub.integration.admin.url.label")<span class="error"> *</span></label>
@@ -61,7 +61,7 @@
       </fieldset>
       
       <fieldset class="fieldSection">
-      	  <legend class="legend"><i class="fa fa-minus-circle" onclick="toggleDisplay(this,'proxyConfigArea');"> </i> $i18n.getText("hub.integration.admin.proxyConfig.label")</legend>
+      	  <legend class="legend"><i class="fa fa-angle-down" onclick="toggleDisplay(this,'proxyConfigArea');"> </i> $i18n.getText("hub.integration.admin.proxyConfig.label")</legend>
       	  <div id="proxyConfigArea">
 		      <div class="field-group">
 		        <label class="label" for="proxyHost">$i18n.getText("hub.integration.admin.proxy.host.label")</label>
@@ -110,14 +110,12 @@
 		  </div>
       </fieldset>
       
-      <div style="padding-top : 10px;">
-		  <input onclick="updateConfig(); startProgressSpinner();" type="button" value="$i18n.getText("hub.integration.admin.save.label")" class="aui-button aui-button-primary">
-		  
-		  <input onclick="testConnection(); startProgressSpinner();" type="button" value="$i18n.getText("hub.integration.admin.test.label")" class="aui-button aui-button-primary">
-		  
-		  <div id="progressSpinner" style="display: inline-block;">
+      <div class="buttonContainer">
+      	  <div id="progressSpinner" style="display: inline-block;">
 		  	<i class="largeIcon fa fa-spinner fa-spin fa-fw"></i>
 		  </div>
+		  <input onclick="testConnection(); startProgressSpinner();" type="button" value="$i18n.getText("hub.integration.admin.test.label")" class="aui-button aui-button-primary">
+		  <input onclick="updateConfig(); startProgressSpinner();" type="button" value="$i18n.getText("hub.integration.admin.save.label")" class="aui-button aui-button-primary">
 	  </div>
     </form>
   </body>

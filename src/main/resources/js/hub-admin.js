@@ -195,14 +195,14 @@ function removeClassFromField(field, cssClass){
 
 function toggleDisplay(icon, fieldId){
 	var iconObject = AJS.$(icon);
-	if(iconObject.hasClass('fa-minus-circle')){
-		removeClassFromField(icon, 'fa-minus-circle');
-		addClassToField(icon, 'fa-plus-circle');
+	if(iconObject.hasClass('fa-angle-down')){
+		removeClassFromField(icon, 'fa-angle-down');
+		addClassToField(icon, 'fa-angle-right');
 		
 		addClassToFieldById(fieldId, hiddenClass);
-	} else if(iconObject.hasClass('fa-plus-circle')){
-		removeClassFromField(icon, 'fa-plus-circle');
-		addClassToField(icon, 'fa-minus-circle');
+	} else if(iconObject.hasClass('fa-angle-right')){
+		removeClassFromField(icon, 'fa-angle-right');
+		addClassToField(icon, 'fa-angle-down');
 	
 		removeClassFromFieldById(fieldId, hiddenClass);
 	}
