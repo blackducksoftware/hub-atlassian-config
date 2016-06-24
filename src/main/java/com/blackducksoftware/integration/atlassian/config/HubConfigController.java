@@ -205,7 +205,7 @@ public class HubConfigController {
 								String.valueOf(proxyPassword.length()));
 					} catch (IllegalArgumentException | EncryptionException e) {
 					}
-				} else if (StringUtils.isBlank(password)) {
+				} else if (StringUtils.isBlank(proxyPassword)) {
 					setValue(settings, HubConfigKeys.CONFIG_PROXY_PASS, null);
 					setValue(settings, HubConfigKeys.CONFIG_PROXY_PASS_LENGTH, null);
 				}
@@ -229,18 +229,16 @@ public class HubConfigController {
 			return Response.status(Status.UNAUTHORIZED).build();
 		}
 
-		transactionTemplate.execute(new
-				TransactionCallback() {
+		transactionTemplate.execute(new TransactionCallback() {
 			@Override
 			public Object doInTransaction() {
-				final PluginSettings settings =
-						pluginSettingsFactory.createGlobalSettings();
+				final PluginSettings settings = pluginSettingsFactory.createGlobalSettings();
 
 				final HubServerConfigBuilder serverConfigBuilder = setConfigBuilderFromSerializableConfig(config,
 						settings);
 
-				final ValidationResults<GlobalFieldKey, HubServerConfig>
-				serverConfigResults = serverConfigBuilder.build();
+				final ValidationResults<GlobalFieldKey, HubServerConfig> serverConfigResults = serverConfigBuilder
+						.build();
 				setConfigFromResult(config, serverConfigResults);
 
 				if (config.hasErrors()) {
@@ -312,7 +310,7 @@ public class HubConfigController {
 		} else {
 			serverConfigBuilder.setPassword(getValue(settings, HubConfigKeys.CONFIG_HUB_PASS));
 			serverConfigBuilder
-			.setPasswordLength(NumberUtils.toInt(getValue(settings, HubConfigKeys.CONFIG_HUB_PASS_LENGTH)));
+					.setPasswordLength(NumberUtils.toInt(getValue(settings, HubConfigKeys.CONFIG_HUB_PASS_LENGTH)));
 		}
 		serverConfigBuilder.setProxyHost(config.getHubProxyHost());
 		serverConfigBuilder.setProxyPort(config.getHubProxyPort());
