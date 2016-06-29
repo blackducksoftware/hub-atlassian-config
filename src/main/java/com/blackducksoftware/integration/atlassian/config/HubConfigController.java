@@ -46,19 +46,18 @@ import com.atlassian.sal.api.transaction.TransactionCallback;
 import com.atlassian.sal.api.transaction.TransactionTemplate;
 import com.atlassian.sal.api.user.UserManager;
 import com.blackducksoftware.integration.atlassian.utils.HubConfigKeys;
-import com.blackducksoftware.integration.hub.HubIntRestService;
 import com.blackducksoftware.integration.hub.builder.HubServerConfigBuilder;
 import com.blackducksoftware.integration.hub.builder.ValidationResultEnum;
 import com.blackducksoftware.integration.hub.builder.ValidationResults;
 import com.blackducksoftware.integration.hub.encryption.PasswordEncrypter;
 import com.blackducksoftware.integration.hub.exception.BDRestException;
 import com.blackducksoftware.integration.hub.exception.EncryptionException;
-import com.blackducksoftware.integration.hub.exception.HubIntegrationException;
 import com.blackducksoftware.integration.hub.global.GlobalFieldKey;
 import com.blackducksoftware.integration.hub.global.HubCredentialsFieldEnum;
 import com.blackducksoftware.integration.hub.global.HubProxyInfoFieldEnum;
 import com.blackducksoftware.integration.hub.global.HubServerConfig;
 import com.blackducksoftware.integration.hub.global.HubServerConfigFieldEnum;
+import com.blackducksoftware.integration.hub.rest.RestConnection;
 
 @Path("/")
 public class HubConfigController {
@@ -247,11 +246,12 @@ public class HubConfigController {
 					Engine.register(false);
 					Engine.getInstance().getRegisteredClients().add(new HttpClientHelper(null));
 					final HubServerConfig serverConfig = serverConfigResults.getConstructedObject();
-					final HubIntRestService restService = new HubIntRestService(serverConfig.getHubUrl().toString());
-					restService.setProxyProperties(serverConfig.getProxyInfo());
-					restService.setTimeout(serverConfig.getTimeout());
+
 					try {
-						final int responseCode = restService.setCookies(
+						final RestConnection restConnection = new RestConnection(serverConfig.getHubUrl().toString());
+						restConnection.setProxyProperties(serverConfig.getProxyInfo());
+						restConnection.setTimeout(serverConfig.getTimeout());
+						final int responseCode = restConnection.setCookies(
 								serverConfig.getGlobalCredentials().getUsername(),
 								serverConfig.getGlobalCredentials().getDecryptedPassword());
 
@@ -268,7 +268,7 @@ public class HubConfigController {
 							config.setTestConnectionError(
 									"There was a problem connecting to the server, Error Code : " + responseCode);
 						}
-					} catch (IllegalArgumentException | HubIntegrationException | URISyntaxException | BDRestException
+					} catch (IllegalArgumentException | URISyntaxException | BDRestException
 							| EncryptionException e) {
 						if (e.getMessage().contains("(401)")) {
 							config.setUsernameError(
@@ -310,7 +310,7 @@ public class HubConfigController {
 		} else {
 			serverConfigBuilder.setPassword(getValue(settings, HubConfigKeys.CONFIG_HUB_PASS));
 			serverConfigBuilder
-					.setPasswordLength(NumberUtils.toInt(getValue(settings, HubConfigKeys.CONFIG_HUB_PASS_LENGTH)));
+			.setPasswordLength(NumberUtils.toInt(getValue(settings, HubConfigKeys.CONFIG_HUB_PASS_LENGTH)));
 		}
 		serverConfigBuilder.setProxyHost(config.getHubProxyHost());
 		serverConfigBuilder.setProxyPort(config.getHubProxyPort());
