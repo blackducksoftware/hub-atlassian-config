@@ -61,6 +61,7 @@ import com.blackducksoftware.integration.hub.rest.RestConnection;
 
 @Path("/")
 public class HubConfigController {
+
 	private final UserManager userManager;
 	private final PluginSettingsFactory pluginSettingsFactory;
 	private final TransactionTemplate transactionTemplate;
@@ -246,7 +247,6 @@ public class HubConfigController {
 					Engine.register(false);
 					Engine.getInstance().getRegisteredClients().add(new HttpClientHelper(null));
 					final HubServerConfig serverConfig = serverConfigResults.getConstructedObject();
-
 					try {
 						final RestConnection restConnection = new RestConnection(serverConfig.getHubUrl().toString());
 						restConnection.setProxyProperties(serverConfig.getProxyInfo());

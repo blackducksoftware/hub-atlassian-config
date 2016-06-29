@@ -6,6 +6,10 @@
 	color : #c00;
 }
 
+.clickable:hover {
+	cursor: pointer;
+}
+
 .largeIcon {
 	font-size : 25px !important;
 }

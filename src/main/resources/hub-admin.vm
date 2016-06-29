@@ -16,7 +16,7 @@
       
       <div class="field-group">
       	<label> </label>
-      	<div id="testConnectionError" class="error hidden"></div>
+      	<div id="configurationError" class="error hidden"></div>
       </div>
       
       <fieldset class="fieldSection">

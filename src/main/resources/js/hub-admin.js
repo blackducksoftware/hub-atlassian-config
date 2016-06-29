@@ -63,7 +63,7 @@ function putConfig(restUrl, successMessage, failureMessage) {
 			    hideError('proxyUsernameError');
 			    hideError('proxyPasswordError');
 			    hideError('noProxyHostError');
-			    hideError('testConnectionError');
+			    hideError('configurationError');
 			      
 			    showStatusMessage(successStatus, 'Success!', successMessage);
 		    },
@@ -78,7 +78,7 @@ function putConfig(restUrl, successMessage, failureMessage) {
 			    handleError('proxyUsernameError', config.hubProxyUserError);
 			    handleError('proxyPasswordError', config.hubProxyPasswordError);
 			    handleError('noProxyHostError', config.hubNoProxyHostsError);
-			    handleError('testConnectionError', config.testConnectionError);
+			    handleError('configurationError', config.testConnectionError);
 			    
 			    showStatusMessage(errorStatus, 'ERROR!', failureMessage);
 		    },
@@ -114,12 +114,51 @@ function populateForm() {
 	      handleError('noProxyHostError', config.hubNoProxyHostsError);
 	    }, error: function(response){
 	    	alert("There was an error loading the configuration.");
+	    	handleDataRetrievalError(response, 'configurationError', "There was a problem retrieving the configuration.", "Configuration Error");
 	    },
 	    complete: function(jqXHR, textStatus){
 	    	 stopProgressSpinner();
 	    }
 	  });
 	}
+
+function handleDataRetrievalError(response, errorId, errorText, dialogTitle){
+	var errorField = AJS.$('#' + errorId);
+	errorField.text(errorText);
+	removeClassFromField(errorField, hiddenClass);
+	addClassToField(errorField, "clickable");
+	var error = JSON.parse(response.responseText);
+	error = AJS.$(error);
+	errorField.click(function() {showErrorDialog(dialogTitle, error.attr("message"), error.attr("status-code"), error.attr("stack-trace")) });
+}
+
+function showErrorDialog(header, errorMessage, errorCode, stackTrace){
+	var errorDialog = new AJS.Dialog({
+	    width: 800, 
+	    height: 500, 
+	    id: 'error-dialog', 
+	    closeOnOutsideClick: true
+	});
+
+	errorDialog.addHeader(header);
+	var errorBody = AJS.$('<div>', {
+	});
+	var errorMessage = AJS.$('<p>', {
+		text : "Error Message : "+ errorMessage
+	});
+	var errorCode = AJS.$('<p>', {
+		text : "Error Code : "+ errorCode
+	});
+	var errorStackTrace = AJS.$('<p>', {
+		text : stackTrace
+	});
+	errorBody.append(errorMessage, errorCode, errorStackTrace);
+	errorDialog.addPanel(header, errorBody, "panel-body");
+	errorDialog.addButton("OK", function (dialog) {
+		errorDialog.hide();
+	});
+	errorDialog.show();
+}
 
 function updateValue(fieldId, configField) {
 	if(configField){
