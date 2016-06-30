@@ -294,11 +294,7 @@ public class HubConfigController {
 			final PluginSettings settings) {
 		final HubServerConfigBuilder serverConfigBuilder = new HubServerConfigBuilder();
 		serverConfigBuilder.setHubUrl(config.getHubUrl());
-		try {
-			serverConfigBuilder.setTimeout(config.getTimeout());
-		} catch (final IllegalArgumentException e) {
-			config.setTimeoutError(e.getMessage());
-		}
+		serverConfigBuilder.setTimeout(config.getTimeout());
 		serverConfigBuilder.setUsername(config.getUsername());
 
 		if (StringUtils.isBlank(config.getPassword())) {
