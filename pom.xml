@@ -5,11 +5,10 @@
   <parent>
     <groupId>com.blackducksoftware.integration</groupId>
     <artifactId>common-maven-parent</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.3</version>
     <relativePath>../common-maven-parent</relativePath>
   </parent>
 
-  <groupId>com.blackducksoftware.integration</groupId>
   <artifactId>hub-atlassian-config</artifactId>
   <version>1.0.1-SNAPSHOT</version>
   <packaging>atlassian-plugin</packaging>
@@ -28,14 +27,6 @@
     <repository>
       <id>jcenter</id>
       <url>https://jcenter.bintray.com</url>
-    </repository>
-    <!-- ekerwin(2016-05-26): this is included only to acquire the parent pom, where this information is sadly duplicated. -->
-    <repository>
-      <snapshots>
-        <updatePolicy>always</updatePolicy>
-      </snapshots>
-      <id>bds-int-public</id>
-      <url>https://updates.suite.blackducksoftware.com/integrations/</url>
     </repository>
     <repository>
       <releases>
