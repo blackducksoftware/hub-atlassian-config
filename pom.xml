@@ -9,7 +9,7 @@
   </parent>
 
   <artifactId>hub-atlassian-config</artifactId>
-  <version>1.0.1-SNAPSHOT</version>
+  <version>1.0.1</version>
   <packaging>atlassian-plugin</packaging>
 
   <name>hub-atlassian-config</name>
