@@ -6,7 +6,6 @@
     <groupId>com.blackducksoftware.integration</groupId>
     <artifactId>common-maven-parent</artifactId>
     <version>1.0.3</version>
-    <relativePath>../common-maven-parent</relativePath>
   </parent>
 
   <artifactId>hub-atlassian-config</artifactId>
@@ -15,6 +14,13 @@
 
   <name>hub-atlassian-config</name>
   <description>This is the com.blackducksoftware.integration:hub-atlassian-config plugin for Atlassian Refapp.</description>
+  <url>https://www.github.com/blackducksoftware/hub-atlassian-config</url>
+
+  <scm>
+    <connection>scm:git:git://github.com/blackducksoftware/hub-atlassian-config.git/</connection>
+    <developerConnection>scm:git:git@github.com:blackducksoftware/hub-atlassian-config.git</developerConnection>
+    <url>https://www.github.com/blackducksoftware/hub-atlassian-config</url>
+  </scm>
 
   <properties>
     <amps.version>5.0.13</amps.version>
@@ -72,23 +78,11 @@
     <dependency>
       <groupId>com.blackducksoftware.integration</groupId>
       <artifactId>hub-common</artifactId>
-      <version>1.4.2-SNAPSHOT</version>
+      <version>1.4.2</version>
       <exclusions>
         <exclusion>
           <groupId>com.thoughtworks.xstream</groupId>
           <artifactId>xstream</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>com.blackducksoftware.integration</groupId>
-          <artifactId>build-info-recorder-mvn30</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>com.blackducksoftware.integration</groupId>
-          <artifactId>build-info-recorder-mvn31</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>com.blackducksoftware.integration</groupId>
-          <artifactId>build-info-common</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
