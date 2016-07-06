@@ -5,7 +5,7 @@
   <parent>
     <groupId>com.blackducksoftware.integration</groupId>
     <artifactId>common-maven-parent</artifactId>
-    <version>1.0.3</version>
+    <version>1.0.5</version>
   </parent>
 
   <artifactId>hub-atlassian-config</artifactId>
@@ -30,10 +30,6 @@
   </properties>
 
   <repositories>
-    <repository>
-      <id>jcenter</id>
-      <url>https://jcenter.bintray.com</url>
-    </repository>
     <repository>
       <releases>
         <enabled>true</enabled>
@@ -96,7 +92,6 @@
       <artifactId>gson</artifactId>
       <version>2.3.1</version>
     </dependency>
-
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>servlet-api</artifactId>
@@ -115,7 +110,6 @@
       <version>1.1.1</version>
       <scope>provided</scope>
     </dependency>
-
     <dependency>
       <groupId>javax.ws.rs</groupId>
       <artifactId>jsr311-api</artifactId>
@@ -128,7 +122,6 @@
       <version>2.1</version>
       <scope>provided</scope>
     </dependency>
-
     <dependency>
       <groupId>com.atlassian.plugins</groupId>
       <artifactId>atlassian-plugins-osgi-testrunner</artifactId>
