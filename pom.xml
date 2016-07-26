@@ -31,10 +31,6 @@
 
   <repositories>
     <repository>
-      <id>jcenter</id>
-      <url>https://jcenter.bintray.com</url>
-    </repository>
-    <repository>
       <releases>
         <enabled>true</enabled>
         <checksumPolicy>warn</checksumPolicy>
@@ -96,7 +92,6 @@
       <artifactId>gson</artifactId>
       <version>2.3.1</version>
     </dependency>
-
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>servlet-api</artifactId>
@@ -115,7 +110,6 @@
       <version>1.1.1</version>
       <scope>provided</scope>
     </dependency>
-
     <dependency>
       <groupId>javax.ws.rs</groupId>
       <artifactId>jsr311-api</artifactId>
@@ -128,7 +122,6 @@
       <version>2.1</version>
       <scope>provided</scope>
     </dependency>
-
     <dependency>
       <groupId>com.atlassian.plugins</groupId>
       <artifactId>atlassian-plugins-osgi-testrunner</artifactId>
