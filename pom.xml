@@ -12,7 +12,7 @@
   <version>1.0.1</version>
   <packaging>atlassian-plugin</packaging>
 
-  <name>hub-atlassian-config</name>
+  <name>Hub Atlassian Config</name>
   <description>This is the com.blackducksoftware.integration:hub-atlassian-config plugin for Atlassian Refapp.</description>
   <url>https://www.github.com/blackducksoftware/hub-atlassian-config</url>
 
