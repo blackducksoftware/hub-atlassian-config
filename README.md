@@ -15,4 +15,4 @@ You can download the latest release artifacts from GitHub: https://github.com/bl
 All documentation for hub-atlassian-config can be found on the base project:  https://github.com/blackducksoftware/hub-atlassian-config/wiki
 
 ## License ##
-Apache License 2.0
+Apache License 2.0 
