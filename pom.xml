@@ -5,11 +5,11 @@
   <parent>
     <groupId>com.blackducksoftware.integration</groupId>
     <artifactId>common-maven-parent</artifactId>
-    <version>1.0.8</version>
+    <version>1.1.0</version>
   </parent>
 
   <artifactId>hub-atlassian-config</artifactId>
-  <version>1.0.1</version>
+  <version>1.0.2-SNAPSHOT</version>
   <packaging>atlassian-plugin</packaging>
 
   <name>Hub Atlassian Config</name>
