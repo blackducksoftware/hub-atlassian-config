@@ -61,7 +61,7 @@
       </fieldset>
       
       <fieldset class="fieldSection">
-      	  <legend class="legend"><i class="fa fa-angle-down" onclick="toggleDisplay(this,'proxyConfigArea');"> </i> $i18n.getText("hub.integration.admin.proxyConfig.label")</legend>
+      	  <legend class="legend"><i id="proxyConfigDisplayIcon" class="fa fa-angle-down" onclick="toggleDisplay(this,'proxyConfigArea');"> </i> $i18n.getText("hub.integration.admin.proxyConfig.label")</legend>
       	  <div id="proxyConfigArea">
 		      <div class="field-group">
 		        <label class="label" for="proxyHost">$i18n.getText("hub.integration.admin.proxy.host.label")</label>

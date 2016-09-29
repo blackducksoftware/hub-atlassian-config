@@ -103,6 +103,8 @@ function populateForm() {
 	      updateValue("proxyPassword", config.hubProxyPassword);
 	      updateValue("noProxyHost", config.hubNoProxyHosts);
 	      
+	      checkProxyConfig();
+	      
 	      handleError('hubServerUrlError', config.hubUrlError);
 	      handleError('hubTimeoutError', config.timeoutError);
 	      handleError('hubUsernameError', config.usernameError);
@@ -158,6 +160,18 @@ function showErrorDialog(header, errorMessage, errorCode, stackTrace){
 		errorDialog.hide();
 	});
 	errorDialog.show();
+}
+
+function checkProxyConfig(){
+	var proxyHost = AJS.$("#proxyHost").val();
+	var proxyPort = AJS.$("#proxyPort").val();
+	var noProxyHost = AJS.$("#noProxyHost").val();
+	var proxyUsername = AJS.$("#proxyUsername").val();
+	var proxyPassword = AJS.$("#proxyPassword").val();
+	
+	if(!proxyHost && !proxyPort && !noProxyHost && !proxyUsername && !proxyPassword){
+		toggleDisplayById("proxyConfigDisplayIcon",'proxyConfigArea');
+	}
 }
 
 function updateValue(fieldId, configField) {
@@ -242,6 +256,21 @@ function toggleDisplay(icon, fieldId){
 	} else if(iconObject.hasClass('fa-angle-right')){
 		removeClassFromField(icon, 'fa-angle-right');
 		addClassToField(icon, 'fa-angle-down');
+	
+		removeClassFromFieldById(fieldId, hiddenClass);
+	}
+}
+
+function toggleDisplayById(iconId, fieldId){
+	var iconObject = AJS.$('#' + iconId);
+	if(iconObject.hasClass('fa-angle-down')){
+		removeClassFromFieldById(iconId, 'fa-angle-down');
+		addClassToFieldById(iconId, 'fa-angle-right');
+		
+		addClassToFieldById(fieldId, hiddenClass);
+	} else if(iconObject.hasClass('fa-angle-right')){
+		removeClassFromFieldById(iconId, 'fa-angle-right');
+		addClassToFieldById(iconId, 'fa-angle-down');
 	
 		removeClassFromFieldById(fieldId, hiddenClass);
 	}
