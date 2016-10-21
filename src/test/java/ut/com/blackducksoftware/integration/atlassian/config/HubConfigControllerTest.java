@@ -40,7 +40,7 @@ import com.blackducksoftware.integration.atlassian.mocks.PluginSettingsFactoryMo
 import com.blackducksoftware.integration.atlassian.mocks.TransactionTemplateMock;
 import com.blackducksoftware.integration.atlassian.mocks.UserManagerMock;
 import com.blackducksoftware.integration.atlassian.utils.HubConfigKeys;
-import com.blackducksoftware.integration.hub.encryption.PasswordEncrypter;
+import com.blackducksoftware.integration.encryption.PasswordEncrypter;
 
 public class HubConfigControllerTest {
 

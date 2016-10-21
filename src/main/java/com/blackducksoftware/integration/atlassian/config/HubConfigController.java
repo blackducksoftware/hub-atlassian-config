@@ -46,17 +46,18 @@ import com.atlassian.sal.api.transaction.TransactionCallback;
 import com.atlassian.sal.api.transaction.TransactionTemplate;
 import com.atlassian.sal.api.user.UserManager;
 import com.blackducksoftware.integration.atlassian.utils.HubConfigKeys;
+import com.blackducksoftware.integration.builder.ValidationResultEnum;
+import com.blackducksoftware.integration.builder.ValidationResults;
+import com.blackducksoftware.integration.encryption.PasswordEncrypter;
+import com.blackducksoftware.integration.exception.EncryptionException;
 import com.blackducksoftware.integration.hub.builder.HubServerConfigBuilder;
-import com.blackducksoftware.integration.hub.builder.ValidationResultEnum;
-import com.blackducksoftware.integration.hub.builder.ValidationResults;
-import com.blackducksoftware.integration.hub.encryption.PasswordEncrypter;
 import com.blackducksoftware.integration.hub.exception.BDRestException;
-import com.blackducksoftware.integration.hub.exception.EncryptionException;
 import com.blackducksoftware.integration.hub.global.GlobalFieldKey;
 import com.blackducksoftware.integration.hub.global.HubCredentialsFieldEnum;
 import com.blackducksoftware.integration.hub.global.HubProxyInfoFieldEnum;
 import com.blackducksoftware.integration.hub.global.HubServerConfig;
 import com.blackducksoftware.integration.hub.global.HubServerConfigFieldEnum;
+import com.blackducksoftware.integration.hub.rest.CredentialsRestConnection;
 import com.blackducksoftware.integration.hub.rest.RestConnection;
 
 @Path("/")
@@ -112,9 +113,8 @@ public class HubConfigController {
 				serverConfigBuilder.setProxyUsername(proxyUser);
 				serverConfigBuilder.setProxyPassword(proxyPassword);
 				serverConfigBuilder.setProxyPasswordLength(NumberUtils.toInt(proxyPasswordLength));
-				final ValidationResults<GlobalFieldKey, HubServerConfig> serverConfigResults = serverConfigBuilder
-						.build();
-				setConfigFromResult(config, serverConfigResults);
+				        
+				setConfigFromResult(config, serverConfigBuilder);
 
 				config.setHubUrl(hubUrl);
 				config.setUsername(username);
@@ -167,9 +167,7 @@ public class HubConfigController {
 				final HubServerConfigBuilder serverConfigBuilder = setConfigBuilderFromSerializableConfig(config,
 						settings);
 
-				final ValidationResults<GlobalFieldKey, HubServerConfig> serverConfigResults = serverConfigBuilder
-						.build();
-				setConfigFromResult(config, serverConfigResults);
+				setConfigFromResult(config, serverConfigBuilder);
 
 				setValue(settings, HubConfigKeys.CONFIG_HUB_URL, config.getHubUrl());
 				setValue(settings, HubConfigKeys.CONFIG_HUB_USER, config.getUsername());
@@ -237,18 +235,16 @@ public class HubConfigController {
 				final HubServerConfigBuilder serverConfigBuilder = setConfigBuilderFromSerializableConfig(config,
 						settings);
 
-				final ValidationResults<GlobalFieldKey, HubServerConfig> serverConfigResults = serverConfigBuilder
-						.build();
-				setConfigFromResult(config, serverConfigResults);
+				setConfigFromResult(config, serverConfigBuilder);
 
 				if (config.hasErrors()) {
 					return config;
 				} else {
 					Engine.register(false);
 					Engine.getInstance().getRegisteredClients().add(new HttpClientHelper(null));
-					final HubServerConfig serverConfig = serverConfigResults.getConstructedObject();
+					final HubServerConfig serverConfig = serverConfigBuilder.buildResults().getConstructedObject();
 					try {
-						final RestConnection restConnection = new RestConnection(serverConfig.getHubUrl().toString());
+						final RestConnection restConnection = new CredentialsRestConnection(serverConfig);
 						restConnection.setProxyProperties(serverConfig.getProxyInfo());
 						restConnection.setTimeout(serverConfig.getTimeout());
 						final int responseCode = restConnection.setCookies(
@@ -330,7 +326,8 @@ public class HubConfigController {
 	}
 
 	private void setConfigFromResult(final HubServerConfigSerializable config,
-			final ValidationResults<GlobalFieldKey, HubServerConfig> serverConfigResults) {
+			final HubServerConfigBuilder serverConfigBuilder) {
+	    ValidationResults<GlobalFieldKey, HubServerConfig> serverConfigResults = serverConfigBuilder.buildResults();
 		if (serverConfigResults.hasErrors()) {
 			if (serverConfigResults.hasErrors(HubServerConfigFieldEnum.HUBURL)) {
 				final List<Throwable> throwables = serverConfigResults
