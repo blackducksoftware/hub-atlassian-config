@@ -24,19 +24,19 @@ package com.blackducksoftware.integration.atlassian;
 import com.atlassian.sal.api.ApplicationProperties;
 
 public class BdHubRefAppImpl implements BdHubRefApp {
-	private final ApplicationProperties applicationProperties;
+    private final ApplicationProperties applicationProperties;
 
-	public BdHubRefAppImpl(final ApplicationProperties applicationProperties) {
-		this.applicationProperties = applicationProperties;
-	}
+    public BdHubRefAppImpl(final ApplicationProperties applicationProperties) {
+        this.applicationProperties = applicationProperties;
+    }
 
-	@Override
-	public String getName() {
-		if (applicationProperties != null) {
-			return "bdHubRefApp:" + applicationProperties.getDisplayName();
-		}
+    @Override
+    public String getName() {
+        if (applicationProperties != null) {
+            return "bdHubRefApp:" + applicationProperties.getDisplayName();
+        }
 
-		return "bdHubRefApp";
-	}
+        return "bdHubRefApp";
+    }
 
 }

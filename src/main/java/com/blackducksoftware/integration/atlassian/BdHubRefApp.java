@@ -21,7 +21,6 @@
  *******************************************************************************/
 package com.blackducksoftware.integration.atlassian;
 
-public interface BdHubRefApp
-{
+public interface BdHubRefApp {
     String getName();
 }
