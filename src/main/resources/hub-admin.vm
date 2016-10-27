@@ -114,8 +114,8 @@
       	  <div id="progressSpinner" style="display: inline-block;">
 		  	<i class="largeIcon fa fa-spinner fa-spin fa-fw"></i>
 		  </div>
-		  <input onclick="testConnection(); startProgressSpinner();" type="button" value="$i18n.getText("hub.integration.admin.test.label")" class="aui-button aui-button-primary">
-		  <input onclick="updateConfig(); startProgressSpinner();" type="button" value="$i18n.getText("hub.integration.admin.save.label")" class="aui-button aui-button-primary">
+		  <input id="testConnectionButton" onclick="testConnection(); startProgressSpinner();" type="button" value="$i18n.getText("hub.integration.admin.test.label")" class="aui-button aui-button-primary">
+		  <input id="saveConfigButton" onclick="updateConfig(); startProgressSpinner();" type="button" value="$i18n.getText("hub.integration.admin.save.label")" class="aui-button aui-button-primary">
 	  </div>
     </form>
   </body>
