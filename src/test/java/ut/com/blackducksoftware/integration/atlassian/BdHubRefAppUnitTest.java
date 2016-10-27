@@ -27,12 +27,10 @@ import com.blackducksoftware.integration.atlassian.BdHubRefAppImpl;
 
 import static org.junit.Assert.assertEquals;
 
-public class BdHubRefAppUnitTest
-{
+public class BdHubRefAppUnitTest {
     @Test
-    public void testMyName()
-    {
+    public void testMyName() {
         BdHubRefApp component = new BdHubRefAppImpl(null);
-        assertEquals("names do not match!", "bdHubRefApp",component.getName());
+        assertEquals("names do not match!", "bdHubRefApp", component.getName());
     }
 }

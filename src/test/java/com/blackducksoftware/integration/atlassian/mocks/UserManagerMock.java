@@ -30,48 +30,49 @@ import com.atlassian.sal.api.user.UserResolutionException;
 
 public class UserManagerMock implements UserManager {
 
-	String remoteUsername;
-	boolean isSystemAdmin;
+    String remoteUsername;
 
-	public UserManagerMock() {
-	}
+    boolean isSystemAdmin;
 
-	public void setRemoteUsername(final String remoteUsername) {
-		this.remoteUsername = remoteUsername;
-	}
+    public UserManagerMock() {
+    }
 
-	@Override
-	public String getRemoteUsername() {
-		return remoteUsername;
-	}
+    public void setRemoteUsername(final String remoteUsername) {
+        this.remoteUsername = remoteUsername;
+    }
 
-	@Override
-	public String getRemoteUsername(final HttpServletRequest request) {
-		return remoteUsername;
-	}
+    @Override
+    public String getRemoteUsername() {
+        return remoteUsername;
+    }
 
-	@Override
-	public boolean isUserInGroup(final String username, final String group) {
-		return false;
-	}
+    @Override
+    public String getRemoteUsername(final HttpServletRequest request) {
+        return remoteUsername;
+    }
 
-	public void setIsSystemAdmin(final boolean isSystemAdmin) {
-		this.isSystemAdmin = isSystemAdmin;
-	}
+    @Override
+    public boolean isUserInGroup(final String username, final String group) {
+        return false;
+    }
 
-	@Override
-	public boolean isSystemAdmin(final String username) {
-		return isSystemAdmin;
-	}
+    public void setIsSystemAdmin(final boolean isSystemAdmin) {
+        this.isSystemAdmin = isSystemAdmin;
+    }
 
-	@Override
-	public boolean authenticate(final String username, final String password) {
-		return false;
-	}
+    @Override
+    public boolean isSystemAdmin(final String username) {
+        return isSystemAdmin;
+    }
 
-	@Override
-	public Principal resolve(final String username) throws UserResolutionException {
-		return null;
-	}
+    @Override
+    public boolean authenticate(final String username, final String password) {
+        return false;
+    }
+
+    @Override
+    public Principal resolve(final String username) throws UserResolutionException {
+        return null;
+    }
 
 }
