@@ -54,31 +54,31 @@ function putConfig(restUrl, successMessage, failureMessage) {
 		    + '"}',
 		    processData: false,
 		    success: function() {
-		    	hideError('hubServerUrlError');
-		    	hideError('hubTimeoutError');
-		    	hideError('hubUsernameError');
-		    	hideError('hubPasswordError');
-		    	hideError('proxyHostError');
-		    	hideError('proxyPortError');
-			    hideError('proxyUsernameError');
-			    hideError('proxyPasswordError');
-			    hideError('noProxyHostError');
-			    hideError('configurationError');
+		    	hideError('hubServerUrlErrorRow', 'hubServerUrlError');
+		    	hideError('hubTimeoutErrorRow', 'hubTimeoutError');
+		    	hideError('hubUsernameErrorRow', 'hubUsernameError');
+		    	hideError('hubPasswordErrorRow', 'hubPasswordError');
+		    	hideError('proxyHostErrorRow', 'proxyHostError');
+		    	hideError('proxyPortErrorRow', 'proxyPortError');
+			    hideError('proxyUsernameErrorRow', 'proxyUsernameError');
+			    hideError('proxyPasswordErrorRow', 'proxyPasswordError');
+			    hideError('noProxyHostErrorRow', 'noProxyHostError');
+			    hideError('configurationErrorRow', 'configurationError');
 			      
 			    showStatusMessage(successStatus, 'Success!', successMessage);
 		    },
 		    error: function(response){
 		    	var config = JSON.parse(response.responseText);
-		    	handleError('hubServerUrlError', config.hubUrlError);
-			    handleError('hubTimeoutError', config.timeoutError);
-			    handleError('hubUsernameError', config.usernameError);
-			    handleError('hubPasswordError', config.passwordError);
-			    handleError('proxyHostError', config.hubProxyHostError);
-			    handleError('proxyPortError', config.hubProxyPortError);
-			    handleError('proxyUsernameError', config.hubProxyUserError);
-			    handleError('proxyPasswordError', config.hubProxyPasswordError);
-			    handleError('noProxyHostError', config.hubNoProxyHostsError);
-			    handleError('configurationError', config.testConnectionError);
+		    	handleError('hubServerUrlErrorRow', 'hubServerUrlError', config.hubUrlError);
+			    handleError('hubTimeoutErrorRow', 'hubTimeoutError', config.timeoutError);
+			    handleError('hubUsernameErrorRow', 'hubUsernameError', config.usernameError);
+			    handleError('hubPasswordErrorRow', 'hubPasswordError', config.passwordError);
+			    handleError('proxyHostErrorRow', 'proxyHostError', config.hubProxyHostError);
+			    handleError('proxyPortErrorRow', 'proxyPortError', config.hubProxyPortError);
+			    handleError('proxyUsernameErrorRow', 'proxyUsernameError', config.hubProxyUserError);
+			    handleError('proxyPasswordErrorRow', 'proxyPasswordError', config.hubProxyPasswordError);
+			    handleError('noProxyHostErrorRow', 'noProxyHostError', config.hubNoProxyHostsError);
+			    handleError('configurationErrorRow', 'configurationError', config.testConnectionError);
 			    
 			    showStatusMessage(errorStatus, 'ERROR!', failureMessage);
 		    },
@@ -105,15 +105,16 @@ function populateForm() {
 	      
 	      checkProxyConfig();
 	      
-	      handleError('hubServerUrlError', config.hubUrlError);
-	      handleError('hubTimeoutError', config.timeoutError);
-	      handleError('hubUsernameError', config.usernameError);
-	      handleError('hubPasswordError', config.passwordError);
-	      handleError('proxyHostError', config.hubProxyHostError);
-	      handleError('proxyPortError', config.hubProxyPortError);
-	      handleError('proxyUsernameError', config.hubProxyUserError);
-	      handleError('proxyPasswordError', config.hubProxyPasswordError);
-	      handleError('noProxyHostError', config.hubNoProxyHostsError);
+	      handleError('hubServerUrlErrorRow', 'hubServerUrlError', config.hubUrlError);
+	      handleError('hubTimeoutErrorRow', 'hubTimeoutError', config.timeoutError);
+	      handleError('hubUsernameErrorRow', 'hubUsernameError', config.usernameError);
+	      handleError('hubPasswordErrorRow', 'hubPasswordError', config.passwordError);
+	      handleError('proxyHostErrorRow', 'proxyHostError', config.hubProxyHostError);
+	      handleError('proxyPortErrorRow', 'proxyPortError', config.hubProxyPortError);
+	      handleError('proxyUsernameErrorRow', 'proxyUsernameError', config.hubProxyUserError);
+	      handleError('proxyPasswordErrorRow', 'proxyPasswordError', config.hubProxyPasswordError);
+	      handleError('noProxyHostErrorRow', 'noProxyHostError', config.hubNoProxyHostsError);
+			    
 	    }, error: function(response){
 	    	alert("There was an error loading the configuration.");
 	    	handleDataRetrievalError(response, 'configurationError', "There was a problem retrieving the configuration.", "Configuration Error");
@@ -180,22 +181,22 @@ function updateValue(fieldId, configField) {
     }
 }
 
-function handleError(fieldId, configField) {
+function handleError(fieldRowId, fieldId, configField) {
 	if(configField){
-		showError(fieldId, configField);
+		showError(fieldRowId, fieldId, configField);
     } else{
-    	hideError(fieldId);
+    	hideError(fieldRowId, fieldId);
     }
 }
 
-function showError(fieldId, configField) {
+function showError(fieldRowId, fieldId, configField) {
 	  AJS.$("#" + fieldId).text(decodeURI(configField));
-  	  removeClassFromFieldById(fieldId, hiddenClass);
+  	  removeClassFromFieldById(fieldRowId, hiddenClass);
 }
 
-function hideError(fieldId) {
+function hideError(fieldRowId, fieldId) {
 	  AJS.$("#" + fieldId).text('');
-  	  addClassToFieldById(fieldId, hiddenClass);
+  	  addClassToFieldById(fieldRowId, hiddenClass);
 }
 
 function showStatusMessage(status, statusTitle, message) {

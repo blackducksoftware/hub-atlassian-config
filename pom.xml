@@ -9,7 +9,7 @@
   </parent>
 
   <artifactId>hub-atlassian-config</artifactId>
-  <version>1.0.3-SNAPSHOT</version>
+  <version>1.1.0-SNAPSHOT</version>
   <packaging>atlassian-plugin</packaging>
 
   <name>Hub Atlassian Config</name>
@@ -74,13 +74,7 @@
     <dependency>
       <groupId>com.blackducksoftware.integration</groupId>
       <artifactId>hub-common</artifactId>
-      <version>1.5.2</version>
-      <exclusions>
-        <exclusion>
-          <groupId>com.thoughtworks.xstream</groupId>
-          <artifactId>xstream</artifactId>
-        </exclusion>
-      </exclusions>
+      <version>2.1.0</version>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>

@@ -29,6 +29,10 @@
 	box-shadow: inset 0 1px 3px #ccc;
 }
 
+.inputDescription {
+	display: block;
+}
+
 .textStyle {
 	font-family: arial,tahoma,verdana,sans-serif;
     font-size: 13px;
