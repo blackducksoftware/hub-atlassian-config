@@ -76,6 +76,24 @@ public class HubConfigControllerTest {
     }
 
     @Test
+    public void testGetConfigNotAdminNotInGroup() {
+        final UserManagerMock managerMock = new UserManagerMock();
+        managerMock.setRemoteUsername("User");
+        managerMock.setUserGroup("FakeGroup");
+        final PluginSettingsFactoryMock settingsFactory = new PluginSettingsFactoryMock();
+        settingsFactory.createGlobalSettings().put(HubConfigKeys.HUB_CONFIG_GROUPS, "OtherGroup");
+        final TransactionTemplateMock transactionManager = new TransactionTemplateMock();
+        final HttpServletRequestMock requestMock = new HttpServletRequestMock();
+
+        final HubConfigController controller = new HubConfigController(managerMock, settingsFactory,
+                transactionManager);
+
+        final Response response = controller.get(requestMock);
+        assertNotNull(response);
+        assertEquals(Integer.valueOf(Status.UNAUTHORIZED.getStatusCode()), Integer.valueOf(response.getStatus()));
+    }
+
+    @Test
     public void testGetConfigEmpty() {
         final UserManagerMock managerMock = new UserManagerMock();
         managerMock.setRemoteUsername("User");
@@ -111,6 +129,60 @@ public class HubConfigControllerTest {
         assertNull(config.getHubProxyPasswordError());
         assertNull(config.getTestConnectionError());
         assertTrue(config.hasErrors());
+    }
+
+    @Test
+    public void testGetConfigNotAdminInGroup() throws Exception {
+        final String testUrl = "https://www.google.com";
+        final String username = "username";
+        final String passwordClear = "password";
+        final String passwordEnc = PasswordEncrypter.encrypt(passwordClear);
+        final String passwordMasked = HubServerConfigSerializable.getMaskedString(passwordClear.length());
+        final String timeout = "120";
+        final String group = "TestGroup";
+
+        final UserManagerMock managerMock = new UserManagerMock();
+        managerMock.setRemoteUsername("User");
+        managerMock.setUserGroup(group);
+        final PluginSettingsFactoryMock settingsFactory = new PluginSettingsFactoryMock();
+        final PluginSettings settings = settingsFactory.createGlobalSettings();
+        settings.put(HubConfigKeys.HUB_CONFIG_GROUPS, group);
+        settings.put(HubConfigKeys.CONFIG_HUB_URL, testUrl);
+        settings.put(HubConfigKeys.CONFIG_HUB_USER, username);
+        settings.put(HubConfigKeys.CONFIG_HUB_PASS, passwordEnc);
+        settings.put(HubConfigKeys.CONFIG_HUB_PASS_LENGTH, String.valueOf(passwordClear.length()));
+        settings.put(HubConfigKeys.CONFIG_HUB_TIMEOUT, timeout);
+
+        final TransactionTemplateMock transactionManager = new TransactionTemplateMock();
+        final HttpServletRequestMock requestMock = new HttpServletRequestMock();
+
+        final HubConfigController controller = new HubConfigController(managerMock, settingsFactory,
+                transactionManager);
+
+        final Response response = controller.get(requestMock);
+        assertNotNull(response);
+        final Object configObject = response.getEntity();
+        assertNotNull(configObject);
+        final HubServerConfigSerializable config = (HubServerConfigSerializable) configObject;
+        assertEquals(testUrl, config.getHubUrl());
+        assertEquals(username, config.getUsername());
+        assertEquals(passwordMasked, config.getPassword());
+        assertEquals(Integer.valueOf(passwordClear.length()), Integer.valueOf(config.getPasswordLength()));
+        assertEquals(timeout, config.getTimeout());
+        assertNull(config.getHubProxyHost());
+        assertNull(config.getHubProxyUser());
+        assertNull(config.getHubProxyPassword());
+        assertEquals(Integer.valueOf(0), Integer.valueOf(config.getHubProxyPasswordLength()));
+
+        assertNull(config.getHubUrlError());
+        assertNull(config.getUsernameError());
+        assertNull(config.getPasswordError());
+        assertNull(config.getTimeoutError());
+        assertNull(config.getHubProxyHostError());
+        assertNull(config.getHubProxyUserError());
+        assertNull(config.getHubProxyPasswordError());
+        assertNull(config.getTestConnectionError());
+        assertFalse(config.hasErrors());
     }
 
     @Test
@@ -201,11 +273,73 @@ public class HubConfigControllerTest {
     }
 
     @Test
+    public void testSaveConfigNotAdminNotInGroup() {
+        final UserManagerMock managerMock = new UserManagerMock();
+        managerMock.setRemoteUsername("User");
+        managerMock.setUserGroup("FakeGroup");
+        final PluginSettingsFactoryMock settingsFactory = new PluginSettingsFactoryMock();
+        settingsFactory.createGlobalSettings().put(HubConfigKeys.HUB_CONFIG_GROUPS, "OtherGroup");
+        final TransactionTemplateMock transactionManager = new TransactionTemplateMock();
+        final HttpServletRequestMock requestMock = new HttpServletRequestMock();
+
+        final HubConfigController controller = new HubConfigController(managerMock, settingsFactory,
+                transactionManager);
+
+        final HubServerConfigSerializable config = new HubServerConfigSerializable();
+
+        final Response response = controller.put(config, requestMock);
+        assertNotNull(response);
+        assertEquals(Integer.valueOf(Status.UNAUTHORIZED.getStatusCode()), Integer.valueOf(response.getStatus()));
+    }
+
+    @Test
     public void testSaveConfigEmpty() {
         final UserManagerMock managerMock = new UserManagerMock();
         managerMock.setRemoteUsername("User");
         managerMock.setIsSystemAdmin(true);
         final PluginSettingsFactoryMock settingsFactory = new PluginSettingsFactoryMock();
+        final TransactionTemplateMock transactionManager = new TransactionTemplateMock();
+        final HttpServletRequestMock requestMock = new HttpServletRequestMock();
+
+        final HubConfigController controller = new HubConfigController(managerMock, settingsFactory,
+                transactionManager);
+
+        HubServerConfigSerializable config = new HubServerConfigSerializable();
+
+        final Response response = controller.put(config, requestMock);
+        assertNotNull(response);
+        final Object configObject = response.getEntity();
+        assertNotNull(configObject);
+        config = (HubServerConfigSerializable) configObject;
+        assertNull(config.getHubUrl());
+        assertNull(config.getUsername());
+        assertNull(config.getPassword());
+        assertEquals(Integer.valueOf(0), Integer.valueOf(config.getPasswordLength()));
+        assertNull(config.getTimeout());
+        assertNull(config.getHubProxyHost());
+        assertNull(config.getHubProxyPort());
+        assertNull(config.getHubProxyUser());
+        assertNull(config.getHubProxyPassword());
+        assertEquals(Integer.valueOf(0), Integer.valueOf(config.getHubProxyPasswordLength()));
+
+        assertNotNull(config.getHubUrlError());
+        assertNotNull(config.getUsernameError());
+        assertNotNull(config.getPasswordError());
+        assertNotNull(config.getTimeoutError());
+        assertNull(config.getHubProxyHostError());
+        assertNull(config.getHubProxyUserError());
+        assertNull(config.getHubProxyPasswordError());
+        assertNull(config.getTestConnectionError());
+        assertTrue(config.hasErrors());
+    }
+
+    @Test
+    public void testSaveConfigEmptyNotAdminInGroup() {
+        final UserManagerMock managerMock = new UserManagerMock();
+        managerMock.setRemoteUsername("User");
+        managerMock.setUserGroup("UserGroup");
+        final PluginSettingsFactoryMock settingsFactory = new PluginSettingsFactoryMock();
+        settingsFactory.createGlobalSettings().put(HubConfigKeys.HUB_CONFIG_GROUPS, "UserGroup");
         final TransactionTemplateMock transactionManager = new TransactionTemplateMock();
         final HttpServletRequestMock requestMock = new HttpServletRequestMock();
 
@@ -465,6 +599,68 @@ public class HubConfigControllerTest {
         final Response response = controller.testConnection(config, requestMock);
         assertNotNull(response);
         assertEquals(Integer.valueOf(Status.UNAUTHORIZED.getStatusCode()), Integer.valueOf(response.getStatus()));
+    }
+
+    @Test
+    public void testTestConnectionConfigNotAdminNotInGroup() {
+        final UserManagerMock managerMock = new UserManagerMock();
+        managerMock.setRemoteUsername("User");
+        managerMock.setUserGroup("FakeGroup");
+        final PluginSettingsFactoryMock settingsFactory = new PluginSettingsFactoryMock();
+        settingsFactory.createGlobalSettings().put(HubConfigKeys.HUB_CONFIG_GROUPS, "OtherGroup");
+        final TransactionTemplateMock transactionManager = new TransactionTemplateMock();
+        final HttpServletRequestMock requestMock = new HttpServletRequestMock();
+
+        final HubConfigController controller = new HubConfigController(managerMock, settingsFactory,
+                transactionManager);
+
+        final HubServerConfigSerializable config = new HubServerConfigSerializable();
+
+        final Response response = controller.testConnection(config, requestMock);
+        assertNotNull(response);
+        assertEquals(Integer.valueOf(Status.UNAUTHORIZED.getStatusCode()), Integer.valueOf(response.getStatus()));
+    }
+
+    @Test
+    public void testTestConnectionConfigEmptyNotAdminInGroup() {
+        final UserManagerMock managerMock = new UserManagerMock();
+        managerMock.setRemoteUsername("User");
+        managerMock.setUserGroup("UserGroup");
+        final PluginSettingsFactoryMock settingsFactory = new PluginSettingsFactoryMock();
+        settingsFactory.createGlobalSettings().put(HubConfigKeys.HUB_CONFIG_GROUPS, "UserGroup");
+        final TransactionTemplateMock transactionManager = new TransactionTemplateMock();
+        final HttpServletRequestMock requestMock = new HttpServletRequestMock();
+
+        final HubConfigController controller = new HubConfigController(managerMock, settingsFactory,
+                transactionManager);
+
+        HubServerConfigSerializable config = new HubServerConfigSerializable();
+
+        final Response response = controller.testConnection(config, requestMock);
+        assertNotNull(response);
+        final Object configObject = response.getEntity();
+        assertNotNull(configObject);
+        config = (HubServerConfigSerializable) configObject;
+        assertNull(config.getHubUrl());
+        assertNull(config.getUsername());
+        assertNull(config.getPassword());
+        assertEquals(Integer.valueOf(0), Integer.valueOf(config.getPasswordLength()));
+        assertNull(config.getTimeout());
+        assertNull(config.getHubProxyHost());
+        assertNull(config.getHubProxyPort());
+        assertNull(config.getHubProxyUser());
+        assertNull(config.getHubProxyPassword());
+        assertEquals(Integer.valueOf(0), Integer.valueOf(config.getHubProxyPasswordLength()));
+
+        assertNotNull(config.getHubUrlError());
+        assertNotNull(config.getUsernameError());
+        assertNotNull(config.getPasswordError());
+        assertNotNull(config.getTimeoutError());
+        assertNull(config.getHubProxyHostError());
+        assertNull(config.getHubProxyUserError());
+        assertNull(config.getHubProxyPasswordError());
+        assertNull(config.getTestConnectionError());
+        assertTrue(config.hasErrors());
     }
 
     @Test

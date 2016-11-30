@@ -34,6 +34,8 @@ public class UserManagerMock implements UserManager {
 
     boolean isSystemAdmin;
 
+    String userGroup;
+
     public UserManagerMock() {
     }
 
@@ -53,7 +55,11 @@ public class UserManagerMock implements UserManager {
 
     @Override
     public boolean isUserInGroup(final String username, final String group) {
-        return false;
+        return group == userGroup;
+    }
+
+    public void setUserGroup(String userGroup) {
+        this.userGroup = userGroup;
     }
 
     public void setIsSystemAdmin(final boolean isSystemAdmin) {

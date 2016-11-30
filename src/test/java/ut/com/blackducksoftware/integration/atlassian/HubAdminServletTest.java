@@ -29,8 +29,10 @@ import com.blackducksoftware.integration.atlassian.HubAdminServlet;
 import com.blackducksoftware.integration.atlassian.mocks.HttpServletRequestMock;
 import com.blackducksoftware.integration.atlassian.mocks.HttpServletResponseMock;
 import com.blackducksoftware.integration.atlassian.mocks.LoginUriProviderMock;
+import com.blackducksoftware.integration.atlassian.mocks.PluginSettingsFactoryMock;
 import com.blackducksoftware.integration.atlassian.mocks.TemplateRendererMock;
 import com.blackducksoftware.integration.atlassian.mocks.UserManagerMock;
+import com.blackducksoftware.integration.atlassian.utils.HubConfigKeys;
 
 public class HubAdminServletTest {
 
@@ -51,7 +53,7 @@ public class HubAdminServletTest {
         final HttpServletRequestMock requestMock = new HttpServletRequestMock();
         requestMock.setRequestURL(requestUrl);
 
-        final HubAdminServlet servlet = new HubAdminServlet(managerMock, loginProviderMock, rendererMock);
+        final HubAdminServlet servlet = new HubAdminServlet(managerMock, loginProviderMock, rendererMock, new PluginSettingsFactoryMock());
 
         servlet.doGet(requestMock, responseMock);
 
@@ -77,7 +79,7 @@ public class HubAdminServletTest {
         final HttpServletRequestMock requestMock = new HttpServletRequestMock();
         requestMock.setRequestURL(requestUrl);
 
-        final HubAdminServlet servlet = new HubAdminServlet(managerMock, loginProviderMock, rendererMock);
+        final HubAdminServlet servlet = new HubAdminServlet(managerMock, loginProviderMock, rendererMock, new PluginSettingsFactoryMock());
 
         servlet.doGet(requestMock, responseMock);
 
@@ -104,11 +106,73 @@ public class HubAdminServletTest {
         final HttpServletRequestMock requestMock = new HttpServletRequestMock();
         requestMock.setRequestURL(requestUrl);
 
-        final HubAdminServlet servlet = new HubAdminServlet(managerMock, loginProviderMock, rendererMock);
+        final HubAdminServlet servlet = new HubAdminServlet(managerMock, loginProviderMock, rendererMock, new PluginSettingsFactoryMock());
 
         servlet.doGet(requestMock, responseMock);
 
         assertEquals("text/html;charset=utf-8", responseMock.getContentType());
         assertEquals("hub-admin.vm", rendererMock.getRenderedString());
     }
+
+    @Test
+    public void testDoGetUserNotAdminInGroup() throws Exception {
+        final String userName = "TestUser";
+        final String redirectUrl = "http://testRedirect";
+        final StringBuffer requestUrl = new StringBuffer();
+        requestUrl.append(redirectUrl);
+
+        final UserManagerMock managerMock = new UserManagerMock();
+        managerMock.setRemoteUsername(userName);
+        managerMock.setUserGroup("GroupTest");
+
+        final LoginUriProviderMock loginProviderMock = new LoginUriProviderMock();
+
+        final TemplateRendererMock rendererMock = new TemplateRendererMock();
+
+        final HttpServletResponseMock responseMock = new HttpServletResponseMock();
+
+        final HttpServletRequestMock requestMock = new HttpServletRequestMock();
+        requestMock.setRequestURL(requestUrl);
+
+        PluginSettingsFactoryMock settingsFactory = new PluginSettingsFactoryMock();
+        settingsFactory.createGlobalSettings().put(HubConfigKeys.HUB_CONFIG_GROUPS, "GroupTest");
+
+        final HubAdminServlet servlet = new HubAdminServlet(managerMock, loginProviderMock, rendererMock, settingsFactory);
+
+        servlet.doGet(requestMock, responseMock);
+
+        assertEquals("text/html;charset=utf-8", responseMock.getContentType());
+        assertEquals("hub-admin.vm", rendererMock.getRenderedString());
+    }
+
+    @Test
+    public void testDoGetUserNotAdminNotInGroup() throws Exception {
+        final String userName = "TestUser";
+        final String redirectUrl = "http://testRedirect";
+        final StringBuffer requestUrl = new StringBuffer();
+        requestUrl.append(redirectUrl);
+
+        final UserManagerMock managerMock = new UserManagerMock();
+        managerMock.setRemoteUsername(userName);
+        managerMock.setUserGroup("Fake");
+
+        final LoginUriProviderMock loginProviderMock = new LoginUriProviderMock();
+
+        final TemplateRendererMock rendererMock = new TemplateRendererMock();
+
+        final HttpServletResponseMock responseMock = new HttpServletResponseMock();
+
+        final HttpServletRequestMock requestMock = new HttpServletRequestMock();
+        requestMock.setRequestURL(requestUrl);
+
+        PluginSettingsFactoryMock settingsFactory = new PluginSettingsFactoryMock();
+        settingsFactory.createGlobalSettings().put(HubConfigKeys.HUB_CONFIG_GROUPS, "GroupTest");
+
+        final HubAdminServlet servlet = new HubAdminServlet(managerMock, loginProviderMock, rendererMock, settingsFactory);
+
+        servlet.doGet(requestMock, responseMock);
+
+        assertEquals(redirectUrl, responseMock.getRedirectedLocation());
+    }
+
 }

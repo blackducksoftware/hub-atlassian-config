@@ -47,4 +47,6 @@ public class HubConfigKeys {
 
     public final static String CONFIG_PROXY_NO_HOST = HUB_CONFIG_KEY_PREFIX + ".hubproxynohost";
 
+    public final static String HUB_CONFIG_GROUPS = HUB_CONFIG_KEY_PREFIX + ".hubGroups";
+
 }

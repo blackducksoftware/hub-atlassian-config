@@ -29,9 +29,14 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.atlassian.sal.api.auth.LoginUriProvider;
+import com.atlassian.sal.api.pluginsettings.PluginSettings;
+import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
 import com.atlassian.sal.api.user.UserManager;
 import com.atlassian.templaterenderer.TemplateRenderer;
+import com.blackducksoftware.integration.atlassian.utils.HubConfigKeys;
 
 public class HubAdminServlet extends HttpServlet {
 
@@ -43,22 +48,51 @@ public class HubAdminServlet extends HttpServlet {
 
     private final TemplateRenderer renderer;
 
+    private final PluginSettingsFactory pluginSettingsFactory;
+
     public HubAdminServlet(final UserManager userManager, final LoginUriProvider loginUriProvider,
-            final TemplateRenderer renderer) {
+            final TemplateRenderer renderer, PluginSettingsFactory pluginSettingsFactory) {
         this.userManager = userManager;
         this.loginUriProvider = loginUriProvider;
         this.renderer = renderer;
+        this.pluginSettingsFactory = pluginSettingsFactory;
+    }
+
+    private boolean isUserAuthorized(final HttpServletRequest request) {
+        final String username = userManager.getRemoteUsername(request);
+        if (username == null) {
+            return false;
+        }
+        if (userManager.isSystemAdmin(username)) {
+            return true;
+        }
+
+        final PluginSettings settings = pluginSettingsFactory.createGlobalSettings();
+        final String hubJiraGroupsString = (String) settings.get(HubConfigKeys.HUB_CONFIG_GROUPS);
+
+        if (StringUtils.isNotBlank(hubJiraGroupsString)) {
+            final String[] hubJiraGroups = hubJiraGroupsString.split(",");
+            boolean userIsInGroups = false;
+            for (final String hubJiraGroup : hubJiraGroups) {
+                if (userManager.isUserInGroup(username, hubJiraGroup)) {
+                    userIsInGroups = true;
+                    break;
+                }
+            }
+            if (userIsInGroups) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
     public void doGet(final HttpServletRequest request, final HttpServletResponse response)
             throws IOException, ServletException {
-        final String username = userManager.getRemoteUsername(request);
-        if (username == null || !userManager.isSystemAdmin(username)) {
+        if (!isUserAuthorized(request)) {
             redirectToLogin(request, response);
             return;
         }
-
         response.setContentType("text/html;charset=utf-8");
         renderer.render("hub-admin.vm", response.getWriter());
     }
@@ -76,4 +110,5 @@ public class HubAdminServlet extends HttpServlet {
         }
         return URI.create(builder.toString());
     }
+
 }

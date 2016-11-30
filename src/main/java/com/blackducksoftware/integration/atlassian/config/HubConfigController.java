@@ -76,19 +76,45 @@ public class HubConfigController {
         this.transactionTemplate = transactionTemplate;
     }
 
+    private Response checkUserPermissions(final HttpServletRequest request, final PluginSettings settings) {
+        final String username = userManager.getRemoteUsername(request);
+        if (username == null) {
+            return Response.status(Status.UNAUTHORIZED).build();
+        }
+        if (userManager.isSystemAdmin(username)) {
+            return null;
+        }
+
+        final String hubJiraGroupsString = getValue(settings, HubConfigKeys.HUB_CONFIG_GROUPS);
+
+        if (StringUtils.isNotBlank(hubJiraGroupsString)) {
+            final String[] hubJiraGroups = hubJiraGroupsString.split(",");
+            boolean userIsInGroups = false;
+            for (final String hubJiraGroup : hubJiraGroups) {
+                if (userManager.isUserInGroup(username, hubJiraGroup)) {
+                    userIsInGroups = true;
+                    break;
+                }
+            }
+            if (userIsInGroups) {
+                return null;
+            }
+        }
+        return Response.status(Status.UNAUTHORIZED).build();
+    }
+
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response get(@Context final HttpServletRequest request) {
-        final String username = userManager.getRemoteUsername(request);
-        if (username == null || !userManager.isSystemAdmin(username)) {
-            return Response.status(Status.UNAUTHORIZED).build();
+        final PluginSettings settings = pluginSettingsFactory.createGlobalSettings();
+        final Response response = checkUserPermissions(request, settings);
+        if (response != null) {
+            return response;
         }
 
         final Object obj = transactionTemplate.execute(new TransactionCallback() {
             @Override
             public Object doInTransaction() {
-                final PluginSettings settings = pluginSettingsFactory.createGlobalSettings();
-
                 final String hubUrl = getValue(settings, HubConfigKeys.CONFIG_HUB_URL);
                 final String username = getValue(settings, HubConfigKeys.CONFIG_HUB_USER);
                 final String password = getValue(settings, HubConfigKeys.CONFIG_HUB_PASS);
@@ -156,15 +182,15 @@ public class HubConfigController {
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
     public Response put(final HubServerConfigSerializable config, @Context final HttpServletRequest request) {
-        final String username = userManager.getRemoteUsername(request);
-        if (username == null || !userManager.isSystemAdmin(username)) {
-            return Response.status(Status.UNAUTHORIZED).build();
+        final PluginSettings settings = pluginSettingsFactory.createGlobalSettings();
+        final Response response = checkUserPermissions(request, settings);
+        if (response != null) {
+            return response;
         }
 
         transactionTemplate.execute(new TransactionCallback() {
             @Override
             public Object doInTransaction() {
-                final PluginSettings settings = pluginSettingsFactory.createGlobalSettings();
 
                 final HubServerConfigBuilder serverConfigBuilder = setConfigBuilderFromSerializableConfig(config,
                         settings);
@@ -224,15 +250,15 @@ public class HubConfigController {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response testConnection(final HubServerConfigSerializable config,
             @Context final HttpServletRequest request) {
-        final String username = userManager.getRemoteUsername(request);
-        if (username == null || !userManager.isSystemAdmin(username)) {
-            return Response.status(Status.UNAUTHORIZED).build();
+        final PluginSettings settings = pluginSettingsFactory.createGlobalSettings();
+        final Response response = checkUserPermissions(request, settings);
+        if (response != null) {
+            return response;
         }
 
         transactionTemplate.execute(new TransactionCallback() {
             @Override
             public Object doInTransaction() {
-                final PluginSettings settings = pluginSettingsFactory.createGlobalSettings();
 
                 final HubServerConfigBuilder serverConfigBuilder = setConfigBuilderFromSerializableConfig(config,
                         settings);
