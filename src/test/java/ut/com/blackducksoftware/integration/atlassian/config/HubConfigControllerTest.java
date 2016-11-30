@@ -81,7 +81,7 @@ public class HubConfigControllerTest {
         managerMock.setRemoteUsername("User");
         managerMock.setUserGroup("FakeGroup");
         final PluginSettingsFactoryMock settingsFactory = new PluginSettingsFactoryMock();
-        settingsFactory.createGlobalSettings().put(HubConfigKeys.HUB_CONFIG_GROUPS, "OtherGroup");
+        settingsFactory.createGlobalSettings().put(HubConfigKeys.HUB_CONFIG_GROUPS, "GroupTest, OtherGroup");
         final TransactionTemplateMock transactionManager = new TransactionTemplateMock();
         final HttpServletRequestMock requestMock = new HttpServletRequestMock();
 
@@ -278,7 +278,7 @@ public class HubConfigControllerTest {
         managerMock.setRemoteUsername("User");
         managerMock.setUserGroup("FakeGroup");
         final PluginSettingsFactoryMock settingsFactory = new PluginSettingsFactoryMock();
-        settingsFactory.createGlobalSettings().put(HubConfigKeys.HUB_CONFIG_GROUPS, "OtherGroup");
+        settingsFactory.createGlobalSettings().put(HubConfigKeys.HUB_CONFIG_GROUPS, "GroupTest, OtherGroupOtherGroup");
         final TransactionTemplateMock transactionManager = new TransactionTemplateMock();
         final HttpServletRequestMock requestMock = new HttpServletRequestMock();
 
@@ -339,7 +339,7 @@ public class HubConfigControllerTest {
         managerMock.setRemoteUsername("User");
         managerMock.setUserGroup("UserGroup");
         final PluginSettingsFactoryMock settingsFactory = new PluginSettingsFactoryMock();
-        settingsFactory.createGlobalSettings().put(HubConfigKeys.HUB_CONFIG_GROUPS, "UserGroup");
+        settingsFactory.createGlobalSettings().put(HubConfigKeys.HUB_CONFIG_GROUPS, "GroupTest, OtherGroup, UserGroup");
         final TransactionTemplateMock transactionManager = new TransactionTemplateMock();
         final HttpServletRequestMock requestMock = new HttpServletRequestMock();
 
@@ -607,7 +607,7 @@ public class HubConfigControllerTest {
         managerMock.setRemoteUsername("User");
         managerMock.setUserGroup("FakeGroup");
         final PluginSettingsFactoryMock settingsFactory = new PluginSettingsFactoryMock();
-        settingsFactory.createGlobalSettings().put(HubConfigKeys.HUB_CONFIG_GROUPS, "OtherGroup");
+        settingsFactory.createGlobalSettings().put(HubConfigKeys.HUB_CONFIG_GROUPS, "GroupTest, OtherGroup");
         final TransactionTemplateMock transactionManager = new TransactionTemplateMock();
         final HttpServletRequestMock requestMock = new HttpServletRequestMock();
 
@@ -627,7 +627,7 @@ public class HubConfigControllerTest {
         managerMock.setRemoteUsername("User");
         managerMock.setUserGroup("UserGroup");
         final PluginSettingsFactoryMock settingsFactory = new PluginSettingsFactoryMock();
-        settingsFactory.createGlobalSettings().put(HubConfigKeys.HUB_CONFIG_GROUPS, "UserGroup");
+        settingsFactory.createGlobalSettings().put(HubConfigKeys.HUB_CONFIG_GROUPS, "GroupTest, OtherGroup,UserGroup");
         final TransactionTemplateMock transactionManager = new TransactionTemplateMock();
         final HttpServletRequestMock requestMock = new HttpServletRequestMock();
 

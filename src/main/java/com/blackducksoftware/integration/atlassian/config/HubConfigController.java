@@ -91,7 +91,7 @@ public class HubConfigController {
             final String[] hubJiraGroups = hubJiraGroupsString.split(",");
             boolean userIsInGroups = false;
             for (final String hubJiraGroup : hubJiraGroups) {
-                if (userManager.isUserInGroup(username, hubJiraGroup)) {
+                if (userManager.isUserInGroup(username, hubJiraGroup.trim())) {
                     userIsInGroups = true;
                     break;
                 }

@@ -55,7 +55,7 @@ public class UserManagerMock implements UserManager {
 
     @Override
     public boolean isUserInGroup(final String username, final String group) {
-        return group == userGroup;
+        return group.equals(userGroup);
     }
 
     public void setUserGroup(String userGroup) {

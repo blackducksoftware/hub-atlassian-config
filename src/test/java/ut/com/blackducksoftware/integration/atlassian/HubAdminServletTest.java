@@ -135,7 +135,7 @@ public class HubAdminServletTest {
         requestMock.setRequestURL(requestUrl);
 
         PluginSettingsFactoryMock settingsFactory = new PluginSettingsFactoryMock();
-        settingsFactory.createGlobalSettings().put(HubConfigKeys.HUB_CONFIG_GROUPS, "GroupTest");
+        settingsFactory.createGlobalSettings().put(HubConfigKeys.HUB_CONFIG_GROUPS, "GroupTest, OtherGroup");
 
         final HubAdminServlet servlet = new HubAdminServlet(managerMock, loginProviderMock, rendererMock, settingsFactory);
 
@@ -166,7 +166,7 @@ public class HubAdminServletTest {
         requestMock.setRequestURL(requestUrl);
 
         PluginSettingsFactoryMock settingsFactory = new PluginSettingsFactoryMock();
-        settingsFactory.createGlobalSettings().put(HubConfigKeys.HUB_CONFIG_GROUPS, "GroupTest");
+        settingsFactory.createGlobalSettings().put(HubConfigKeys.HUB_CONFIG_GROUPS, "GroupTest, OtherGroup");
 
         final HubAdminServlet servlet = new HubAdminServlet(managerMock, loginProviderMock, rendererMock, settingsFactory);
 
