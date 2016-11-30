@@ -273,7 +273,6 @@ public class HubConfigController {
                     final HubServerConfig serverConfig = serverConfigBuilder.buildResults().getConstructedObject();
                     try {
                         final RestConnection restConnection = new CredentialsRestConnection(serverConfig);
-                        restConnection.setProxyProperties(serverConfig.getProxyInfo());
                         restConnection.setTimeout(serverConfig.getTimeout());
                         final int responseCode = restConnection.setCookies(
                                 serverConfig.getGlobalCredentials().getUsername(),
