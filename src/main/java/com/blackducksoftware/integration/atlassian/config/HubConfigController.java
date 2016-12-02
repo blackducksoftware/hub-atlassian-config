@@ -37,8 +37,6 @@ import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
-import org.restlet.engine.Engine;
-import org.restlet.engine.connector.HttpClientHelper;
 
 import com.atlassian.sal.api.pluginsettings.PluginSettings;
 import com.atlassian.sal.api.pluginsettings.PluginSettingsFactory;
@@ -268,8 +266,6 @@ public class HubConfigController {
                 if (config.hasErrors()) {
                     return config;
                 } else {
-                    Engine.register(false);
-                    Engine.getInstance().getRegisteredClients().add(new HttpClientHelper(null));
                     final HubServerConfig serverConfig = serverConfigBuilder.buildResults().getConstructedObject();
                     try {
                         final RestConnection restConnection = new CredentialsRestConnection(serverConfig);
