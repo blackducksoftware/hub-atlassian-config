@@ -68,6 +68,7 @@ function putConfig(restUrl, successMessage, failureMessage) {
 			    showStatusMessage(successStatus, 'Success!', successMessage);
 		    },
 		    error: function(response){
+		    	console.log("error response: " + response.responseText);
 		    	var config = JSON.parse(response.responseText);
 		    	handleError('hubServerUrlErrorRow', 'hubServerUrlError', config.hubUrlError);
 			    handleError('hubTimeoutErrorRow', 'hubTimeoutError', config.timeoutError);
