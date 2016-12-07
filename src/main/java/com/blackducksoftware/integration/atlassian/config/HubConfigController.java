@@ -21,8 +21,8 @@
  *******************************************************************************/
 package com.blackducksoftware.integration.atlassian.config;
 
-import java.net.URISyntaxException;
-import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
@@ -44,19 +44,17 @@ import com.atlassian.sal.api.transaction.TransactionCallback;
 import com.atlassian.sal.api.transaction.TransactionTemplate;
 import com.atlassian.sal.api.user.UserManager;
 import com.blackducksoftware.integration.atlassian.utils.HubConfigKeys;
-import com.blackducksoftware.integration.builder.ValidationResultEnum;
 import com.blackducksoftware.integration.builder.ValidationResults;
 import com.blackducksoftware.integration.encryption.PasswordEncrypter;
 import com.blackducksoftware.integration.exception.EncryptionException;
 import com.blackducksoftware.integration.hub.builder.HubServerConfigBuilder;
-import com.blackducksoftware.integration.hub.exception.BDRestException;
+import com.blackducksoftware.integration.hub.exception.HubIntegrationException;
 import com.blackducksoftware.integration.hub.global.GlobalFieldKey;
 import com.blackducksoftware.integration.hub.global.HubCredentialsFieldEnum;
 import com.blackducksoftware.integration.hub.global.HubProxyInfoFieldEnum;
 import com.blackducksoftware.integration.hub.global.HubServerConfig;
 import com.blackducksoftware.integration.hub.global.HubServerConfigFieldEnum;
 import com.blackducksoftware.integration.hub.rest.CredentialsRestConnection;
-import com.blackducksoftware.integration.hub.rest.RestConnection;
 
 @Path("/")
 public class HubConfigController {
@@ -248,65 +246,75 @@ public class HubConfigController {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response testConnection(final HubServerConfigSerializable config,
             @Context final HttpServletRequest request) {
-        final PluginSettings settings = pluginSettingsFactory.createGlobalSettings();
-        final Response response = checkUserPermissions(request, settings);
-        if (response != null) {
-            return response;
-        }
-
-        transactionTemplate.execute(new TransactionCallback() {
-            @Override
-            public Object doInTransaction() {
-
-                final HubServerConfigBuilder serverConfigBuilder = setConfigBuilderFromSerializableConfig(config,
-                        settings);
-
-                setConfigFromResult(config, serverConfigBuilder);
-
-                if (config.hasErrors()) {
-                    return config;
-                } else {
-                    final HubServerConfig serverConfig = serverConfigBuilder.buildResults().getConstructedObject();
-                    try {
-                        final RestConnection restConnection = new CredentialsRestConnection(serverConfig);
-                        restConnection.setTimeout(serverConfig.getTimeout());
-                        final int responseCode = restConnection.setCookies(
-                                serverConfig.getGlobalCredentials().getUsername(),
-                                serverConfig.getGlobalCredentials().getDecryptedPassword());
-
-                        if (responseCode == 200 || responseCode == 204 || responseCode == 202) {
-                            return null;
-                        } else if (responseCode == 401) {
-                            // If User is Not Authorized, 401 error, an
-                            // exception should be
-                            // thrown by the ClientResource
-                            config.setUsernameError(
-                                    "Username and Password are invalid for : " + serverConfig.getHubUrl());
-
-                        } else {
-                            config.setTestConnectionError(
-                                    "There was a problem connecting to the server, Error Code : " + responseCode);
-                        }
-                    } catch (IllegalArgumentException | URISyntaxException | BDRestException
-                            | EncryptionException e) {
-                        if (e.getMessage().contains("(401)")) {
-                            config.setUsernameError(
-                                    "Username and Password are invalid for : " + serverConfig.getHubUrl());
-                        } else if (e.getMessage().contains("(407)")) {
-                            config.setHubProxyUserError("Proxy Username and Password are invalid for : "
-                                    + serverConfig.getProxyInfo().getHost());
-                        } else {
-                            config.setTestConnectionError(e.toString());
-                        }
-                    }
-                    return config;
-                }
+        try {
+            final PluginSettings settings = pluginSettingsFactory.createGlobalSettings();
+            final Response response = checkUserPermissions(request, settings);
+            if (response != null) {
+                return response;
             }
-        });
-        if (config.hasErrors()) {
+
+            transactionTemplate.execute(new TransactionCallback() {
+                @Override
+                public Object doInTransaction() {
+
+                    final HubServerConfigBuilder serverConfigBuilder = setConfigBuilderFromSerializableConfig(config,
+                            settings);
+
+                    setConfigFromResult(config, serverConfigBuilder);
+
+                    if (config.hasErrors()) {
+                        return config;
+                    } else {
+                        final HubServerConfig serverConfig = serverConfigBuilder.buildResults().getConstructedObject();
+                        try {
+                            final CredentialsRestConnection restConnection = new CredentialsRestConnection(serverConfig);
+                            restConnection.setTimeout(serverConfig.getTimeout());
+                            final int responseCode = restConnection.setCookies(
+                                    serverConfig.getGlobalCredentials().getUsername(),
+                                    serverConfig.getGlobalCredentials().getDecryptedPassword());
+
+                            if (responseCode == 200 || responseCode == 204 || responseCode == 202) {
+                                return null;
+                            } else if (responseCode == 401) {
+                                // If User is Not Authorized, 401 error, an
+                                // exception should be
+                                // thrown by the ClientResource
+                                config.setUsernameError(
+                                        "Username and Password are invalid for : " + serverConfig.getHubUrl());
+
+                            } else {
+                                config.setTestConnectionError(
+                                        "There was a problem connecting to the server, Error Code : " + responseCode);
+                            }
+                        } catch (IllegalArgumentException
+                                | EncryptionException | HubIntegrationException e) {
+                            if (e.getMessage().contains("(401)")) {
+                                config.setUsernameError(
+                                        "Username and Password are invalid for : " + serverConfig.getHubUrl());
+                            } else if (e.getMessage().contains("(407)")) {
+                                config.setHubProxyUserError("Proxy Username and Password are invalid for : "
+                                        + serverConfig.getProxyInfo().getHost());
+                            } else {
+                                config.setTestConnectionError(e.toString());
+                            }
+                        }
+                        return config;
+                    }
+                }
+            });
+            if (config.hasErrors()) {
+                return Response.ok(config).status(Status.BAD_REQUEST).build();
+            }
+            return Response.noContent().build();
+        } catch (Throwable t) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("Unexpected exception caught in testConnection(): ");
+            sb.append(t.getMessage());
+            sb.append("; Caused by: ");
+            sb.append(t.getCause().getMessage());
+            config.setHubUrlError(sb.toString());
             return Response.ok(config).status(Status.BAD_REQUEST).build();
         }
-        return Response.noContent().build();
     }
 
     private HubServerConfigBuilder setConfigBuilderFromSerializableConfig(final HubServerConfigSerializable config,
@@ -352,50 +360,33 @@ public class HubConfigController {
             final HubServerConfigBuilder serverConfigBuilder) {
         ValidationResults<GlobalFieldKey, HubServerConfig> serverConfigResults = serverConfigBuilder.buildResults();
         if (serverConfigResults.hasErrors()) {
-            if (serverConfigResults.hasErrors(HubServerConfigFieldEnum.HUBURL)) {
-                final List<Throwable> throwables = serverConfigResults
-                        .getResultThrowables(HubServerConfigFieldEnum.HUBURL, ValidationResultEnum.ERROR);
-
-                final StringBuilder urlErrorBuilder = new StringBuilder();
-                urlErrorBuilder.append(serverConfigResults.getResultString(HubServerConfigFieldEnum.HUBURL,
-                        ValidationResultEnum.ERROR));
-                if (throwables != null && !throwables.isEmpty()) {
-                    urlErrorBuilder.append(" ... ");
-                    urlErrorBuilder.append(throwables.get(0).toString());
-                }
-                config.setHubUrlError(urlErrorBuilder.toString());
+            Map<GlobalFieldKey, Set<String>> resultMap = serverConfigResults.getResultMap();
+            if (resultMap.containsKey(HubServerConfigFieldEnum.HUBURL)) {
+                config.setHubUrlError(serverConfigResults.getResultString(HubServerConfigFieldEnum.HUBURL));
             }
-            if (serverConfigResults.hasErrors(HubServerConfigFieldEnum.HUBTIMEOUT)) {
-                config.setTimeoutError(serverConfigResults.getResultString(HubServerConfigFieldEnum.HUBTIMEOUT,
-                        ValidationResultEnum.ERROR));
+            if (resultMap.containsKey(HubServerConfigFieldEnum.HUBTIMEOUT)) {
+                config.setTimeoutError(serverConfigResults.getResultString(HubServerConfigFieldEnum.HUBTIMEOUT));
             }
-            if (serverConfigResults.hasErrors(HubCredentialsFieldEnum.USERNAME)) {
-                config.setUsernameError(serverConfigResults.getResultString(HubCredentialsFieldEnum.USERNAME,
-                        ValidationResultEnum.ERROR));
+            if (resultMap.containsKey(HubCredentialsFieldEnum.USERNAME)) {
+                config.setUsernameError(serverConfigResults.getResultString(HubCredentialsFieldEnum.USERNAME));
             }
-            if (serverConfigResults.hasErrors(HubCredentialsFieldEnum.PASSWORD)) {
-                config.setPasswordError(serverConfigResults.getResultString(HubCredentialsFieldEnum.PASSWORD,
-                        ValidationResultEnum.ERROR));
+            if (resultMap.containsKey(HubCredentialsFieldEnum.PASSWORD)) {
+                config.setPasswordError(serverConfigResults.getResultString(HubCredentialsFieldEnum.PASSWORD));
             }
-            if (serverConfigResults.hasErrors(HubProxyInfoFieldEnum.PROXYHOST)) {
-                config.setHubProxyHostError(serverConfigResults.getResultString(HubProxyInfoFieldEnum.PROXYHOST,
-                        ValidationResultEnum.ERROR));
+            if (resultMap.containsKey(HubProxyInfoFieldEnum.PROXYHOST)) {
+                config.setHubProxyHostError(serverConfigResults.getResultString(HubProxyInfoFieldEnum.PROXYHOST));
             }
-            if (serverConfigResults.hasErrors(HubProxyInfoFieldEnum.NOPROXYHOSTS)) {
-                config.setHubNoProxyHostsError(serverConfigResults.getResultString(HubProxyInfoFieldEnum.NOPROXYHOSTS,
-                        ValidationResultEnum.ERROR));
+            if (resultMap.containsKey(HubProxyInfoFieldEnum.NOPROXYHOSTS)) {
+                config.setHubNoProxyHostsError(serverConfigResults.getResultString(HubProxyInfoFieldEnum.NOPROXYHOSTS));
             }
-            if (serverConfigResults.hasErrors(HubProxyInfoFieldEnum.PROXYPORT)) {
-                config.setHubProxyPortError(serverConfigResults.getResultString(HubProxyInfoFieldEnum.PROXYPORT,
-                        ValidationResultEnum.ERROR));
+            if (resultMap.containsKey(HubProxyInfoFieldEnum.PROXYPORT)) {
+                config.setHubProxyPortError(serverConfigResults.getResultString(HubProxyInfoFieldEnum.PROXYPORT));
             }
-            if (serverConfigResults.hasErrors(HubProxyInfoFieldEnum.PROXYUSERNAME)) {
-                config.setHubProxyUserError(serverConfigResults.getResultString(HubProxyInfoFieldEnum.PROXYUSERNAME,
-                        ValidationResultEnum.ERROR));
+            if (resultMap.containsKey(HubProxyInfoFieldEnum.PROXYUSERNAME)) {
+                config.setHubProxyUserError(serverConfigResults.getResultString(HubProxyInfoFieldEnum.PROXYUSERNAME));
             }
-            if (serverConfigResults.hasErrors(HubProxyInfoFieldEnum.PROXYPASSWORD)) {
-                config.setHubProxyPasswordError(serverConfigResults.getResultString(HubProxyInfoFieldEnum.PROXYPASSWORD,
-                        ValidationResultEnum.ERROR));
+            if (resultMap.containsKey(HubProxyInfoFieldEnum.PROXYPASSWORD)) {
+                config.setHubProxyPasswordError(serverConfigResults.getResultString(HubProxyInfoFieldEnum.PROXYPASSWORD));
             }
         }
     }

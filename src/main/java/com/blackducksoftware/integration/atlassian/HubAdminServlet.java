@@ -30,6 +30,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
+import org.restlet.engine.Engine;
+import org.restlet.engine.connector.HttpClientHelper;
 
 import com.atlassian.sal.api.auth.LoginUriProvider;
 import com.atlassian.sal.api.pluginsettings.PluginSettings;
@@ -56,6 +58,24 @@ public class HubAdminServlet extends HttpServlet {
         this.loginUriProvider = loginUriProvider;
         this.renderer = renderer;
         this.pluginSettingsFactory = pluginSettingsFactory;
+
+        initializeHttpClientHelper();
+    }
+
+    private void initializeHttpClientHelper() {
+        // configure the Restlet engine so that the HTTPHandle and classes
+        // from the com.sun.net.httpserver package
+        // do not need to be used at runtime to make client calls.
+        // DO NOT REMOVE THIS or the OSGI bundle will throw a
+        // ClassNotFoundException for com.sun.net.httpserver.HttpHandler.
+        // Since we are acting as a client we do not need the httpserver
+        // components.
+
+        // This workaround found here:
+        // http://stackoverflow.com/questions/25179243/com-sun-net-httpserver-httphandler-classnotfound-exception-on-java-embedded-runt
+
+        Engine.register(false);
+        Engine.getInstance().getRegisteredClients().add(new HttpClientHelper(null));
     }
 
     private boolean isUserAuthorized(final HttpServletRequest request) {

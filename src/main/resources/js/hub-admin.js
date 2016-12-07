@@ -37,6 +37,7 @@ function testConnection() {
 	}
 
 function putConfig(restUrl, successMessage, failureMessage) {
+	console.log("putConfig()");
 	  AJS.$.ajax({
 		    url: restUrl,
 		    type: "PUT",
@@ -68,7 +69,7 @@ function putConfig(restUrl, successMessage, failureMessage) {
 			    showStatusMessage(successStatus, 'Success!', successMessage);
 		    },
 		    error: function(response){
-		    	console.log("error response: " + response.responseText);
+		    	console.log("putConfig(): error");
 		    	var config = JSON.parse(response.responseText);
 		    	handleError('hubServerUrlErrorRow', 'hubServerUrlError', config.hubUrlError);
 			    handleError('hubTimeoutErrorRow', 'hubTimeoutError', config.timeoutError);
