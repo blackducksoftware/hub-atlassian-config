@@ -69,7 +69,7 @@ function putConfig(restUrl, successMessage, failureMessage) {
 			    showStatusMessage(successStatus, 'Success!', successMessage);
 		    },
 		    error: function(response){
-		    	console.log("putConfig(): error");
+		    	console.log("putConfig(): " + response.responseText);
 		    	var config = JSON.parse(response.responseText);
 		    	handleError('hubServerUrlErrorRow', 'hubServerUrlError', config.hubUrlError);
 			    handleError('hubTimeoutErrorRow', 'hubTimeoutError', config.timeoutError);
@@ -118,6 +118,7 @@ function populateForm() {
 	      handleError('noProxyHostErrorRow', 'noProxyHostError', config.hubNoProxyHostsError);
 			    
 	    }, error: function(response){
+	    	console.log("putConfig(): " + response.responseText);
 	    	alert("There was an error loading the configuration.");
 	    	handleDataRetrievalError(response, 'configurationError', "There was a problem retrieving the configuration.", "Configuration Error");
 	    },

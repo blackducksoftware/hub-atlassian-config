@@ -23,6 +23,7 @@
 		        com.thoughtworks.xstream.io.xml;resolution:="optional",
 		        javax.crypto;resolution:="optional",
 		        javax.net.ssl;resolution:="optional",
+		        javax.net;resolution:="optional", 
 		        javax.security.auth.x500;resolution:="optional",
 		        javax.servlet;resolution:="optional",
 		        javax.servlet.http;resolution:="optional",
